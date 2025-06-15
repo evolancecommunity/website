@@ -144,6 +144,73 @@ Total waitlist members: ${existingData.length}`
 
   return (
     <div className="App">
+      {/* Admin Panel Toggle (Hidden Button) */}
+      <div 
+        className="fixed bottom-4 right-4 z-50"
+        onDoubleClick={toggleAdminPanel}
+      >
+        <div className="w-4 h-4 bg-transparent cursor-pointer" title="Double-click for admin"></div>
+      </div>
+
+      {/* Admin Panel */}
+      {showAdminPanel && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-2xl p-8 max-w-4xl w-full max-h-[80vh] overflow-auto border border-purple-500/30">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">Waitlist Admin Panel</h2>
+              <button
+                onClick={toggleAdminPanel}
+                className="text-white/60 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <div className="flex items-center justify-between">
+                <p className="text-white/80">Total Waitlist Members: <span className="text-purple-400 font-bold text-xl">{waitlistCount}</span></p>
+                <button
+                  onClick={clearWaitlist}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors duration-200"
+                >
+                  Clear All Data
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {getWaitlistData().map((entry, index) => (
+                <div key={entry.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <div className="grid md:grid-cols-4 gap-2 text-sm">
+                    <div>
+                      <span className="text-purple-300 font-semibold">#{index + 1}</span>
+                      <p className="text-white">{entry.firstName} {entry.lastName}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/60">Email:</p>
+                      <p className="text-white">{entry.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/60">Date:</p>
+                      <p className="text-white">{entry.date}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/60">Time:</p>
+                      <p className="text-white">{entry.time}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {waitlistCount === 0 && (
+                <div className="text-center py-8 text-white/60">
+                  No waitlist entries yet.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-black/20 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
