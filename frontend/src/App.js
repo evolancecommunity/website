@@ -12,6 +12,8 @@ const App = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [activeAccordion, setActiveAccordion] = useState(null);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [waitlistCount, setWaitlistCount] = useState(0);
 
   useEffect(() => {
     // Add smooth scroll behavior
