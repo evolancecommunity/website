@@ -563,10 +563,15 @@ Total waitlist members: ${existingData.length}`
 
           <div className="max-w-md mx-auto">
             {isWaitlistSubmitted ? (
-              <div className="bg-green-500/20 backdrop-blur-lg border border-green-400/50 rounded-2xl p-8 animate-pulse">
-                <div className="text-4xl mb-4">✨</div>
-                <h3 className="text-2xl font-semibold text-white mb-2">Welcome to the Journey!</h3>
-                <p className="text-green-300">You're now on our waitlist. The founder will be in touch soon!</p>
+              <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-lg border border-green-400/50 rounded-2xl p-8 animate-pulse">
+                <div className="text-6xl mb-6">🎉</div>
+                <h3 className="text-3xl font-semibold text-white mb-4">Welcome to the Journey!</h3>
+                <p className="text-green-300 text-lg mb-4">You're now on our waitlist. The founder will be in touch soon!</p>
+                <div className="flex items-center justify-center space-x-2 text-sm text-white/60">
+                  <span>👥 You're member #{waitlistCount}</span>
+                  <span>•</span>
+                  <span>📧 Check your email for next steps</span>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleWaitlistSubmit} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
