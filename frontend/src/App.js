@@ -105,6 +105,9 @@ Total waitlist members: ${existingData.length}`
       console.log("Waitlist signup successful:", waitlistData);
       console.log("Total waitlist members:", existingData.length);
       
+      // Update waitlist count
+      updateWaitlistCount();
+      
       setIsWaitlistSubmitted(true);
       setFormData({ firstName: "", lastName: "", email: "" });
       setTimeout(() => setIsWaitlistSubmitted(false), 5000);
