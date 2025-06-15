@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
+import emailjs from '@emailjs/browser';
 import "./App.css";
 
 const App = () => {
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: ""
+  });
   const [isWaitlistSubmitted, setIsWaitlistSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   useEffect(() => {
