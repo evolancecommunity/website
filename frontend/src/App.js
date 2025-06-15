@@ -10,21 +10,69 @@ const App = () => {
   });
   const [isWaitlistSubmitted, setIsWaitlistSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   useEffect(() => {
     // Add smooth scroll behavior
     document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Initialize EmailJS
+    emailjs.init("YOUR_PUBLIC_KEY"); // You'll need to replace this with actual EmailJS public key
   }, []);
 
-  const handleWaitlistSubmit = (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleWaitlistSubmit = async (e) => {
     e.preventDefault();
-    if (email) {
-      // In a real app, you'd send this to your backend
-      console.log("Waitlist signup:", email);
+    if (!formData.firstName || !formData.lastName || !formData.email) {
+      setSubmitError("Please fill in all fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      // EmailJS service configuration
+      const templateParams = {
+        to_email: 'founder@evolance.info',
+        subject: `Requesting Waitlist ${formData.firstName} ${formData.lastName} ${formData.email}`,
+        from_name: `${formData.firstName} ${formData.lastName}`,
+        from_email: formData.email,
+        message: `New waitlist signup:
+        
+Name: ${formData.firstName} ${formData.lastName}
+Email: ${formData.email}
+Date: ${new Date().toLocaleDateString()}
+Time: ${new Date().toLocaleTimeString()}
+
+This person has expressed interest in joining the Evolance waitlist and would like early access to the platform.`
+      };
+
+      // Send email using EmailJS
+      // Note: You'll need to configure these with actual EmailJS credentials
+      await emailjs.send(
+        'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
+        'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
+        templateParams
+      );
+
+      console.log("Waitlist signup:", formData);
       setIsWaitlistSubmitted(true);
-      setEmail("");
-      setTimeout(() => setIsWaitlistSubmitted(false), 3000);
+      setFormData({ firstName: "", lastName: "", email: "" });
+      setTimeout(() => setIsWaitlistSubmitted(false), 5000);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setSubmitError("There was an error submitting your request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -341,26 +389,68 @@ const App = () => {
               <div className="bg-green-500/20 backdrop-blur-lg border border-green-400/50 rounded-2xl p-8 animate-pulse">
                 <div className="text-4xl mb-4">✨</div>
                 <h3 className="text-2xl font-semibold text-white mb-2">Welcome to the Journey!</h3>
-                <p className="text-green-300">You're now on our waitlist. Check your email for next steps.</p>
+                <p className="text-green-300">You're now on our waitlist. The founder will be in touch soon!</p>
               </div>
             ) : (
               <form onSubmit={handleWaitlistSubmit} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+                {submitError && (
+                  <div className="mb-4 p-3 bg-red-500/20 border border-red-400/50 rounded-lg text-red-300 text-sm">
+                    {submitError}
+                  </div>
+                )}
+                
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      placeholder="First Name"
+                      required
+                      className="w-full px-6 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      placeholder="Last Name"
+                      required
+                      className="w-full px-6 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                    />
+                  </div>
+                </div>
+                
                 <div className="mb-6">
                   <input
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     placeholder="Enter your email address"
                     required
                     className="w-full px-6 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
                   />
                 </div>
+                
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  Join the Waitlist
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
+                      Joining Waitlist...
+                    </div>
+                  ) : (
+                    "Join the Waitlist"
+                  )}
                 </button>
+                
                 <p className="text-white/60 text-sm mt-4">
                   Early access • Exclusive pricing • Shape the future
                 </p>
