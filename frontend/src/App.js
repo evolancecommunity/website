@@ -40,6 +40,32 @@ const App = () => {
     setSubmitError("");
 
     try {
+      // Store in local database (localStorage for now)
+      const waitlistData = {
+        id: Date.now(),
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        timestamp: new Date().toISOString(),
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString()
+      };
+
+      // Get existing waitlist data
+      const existingData = JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
+      
+      // Check if email already exists
+      const emailExists = existingData.some(entry => entry.email === formData.email);
+      if (emailExists) {
+        setSubmitError("This email is already on our waitlist!");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Add new entry
+      existingData.push(waitlistData);
+      localStorage.setItem('evolanceWaitlist', JSON.stringify(existingData));
+
       // EmailJS service configuration
       const templateParams = {
         to_email: 'founder@evolance.info',
@@ -50,26 +76,30 @@ const App = () => {
         
 Name: ${formData.firstName} ${formData.lastName}
 Email: ${formData.email}
-Date: ${new Date().toLocaleDateString()}
-Time: ${new Date().toLocaleTimeString()}
+Date: ${waitlistData.date}
+Time: ${waitlistData.time}
+Timestamp: ${waitlistData.timestamp}
 
-This person has expressed interest in joining the Evolance waitlist and would like early access to the platform.`
+This person has expressed interest in joining the Evolance waitlist and would like early access to the platform.
+
+Total waitlist members: ${existingData.length}`
       };
 
       // Send email using EmailJS
-      // Note: You'll need to configure these with actual EmailJS credentials
       await emailjs.send(
-        'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
-        'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
+        'service_bfxrzma',
+        'template_zdw244t',
         templateParams
       );
 
-      console.log("Waitlist signup:", formData);
+      console.log("Waitlist signup successful:", waitlistData);
+      console.log("Total waitlist members:", existingData.length);
+      
       setIsWaitlistSubmitted(true);
       setFormData({ firstName: "", lastName: "", email: "" });
       setTimeout(() => setIsWaitlistSubmitted(false), 5000);
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error processing waitlist signup:', error);
       setSubmitError("There was an error submitting your request. Please try again.");
     } finally {
       setIsSubmitting(false);
