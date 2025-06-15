@@ -679,10 +679,10 @@ Total waitlist members: ${existingData.length}`
             )}
 
             {/* Infinity Symbol - Representing Infinite Consciousness */}
-            <div className="mb-8 opacity-90">
+            <div className="mb-10 opacity-95">
               <InfinitySymbol />
-              <p className="text-white/60 text-xs mt-2 font-light tracking-widest">
-                INFINITE POTENTIAL
+              <p className="text-white/50 text-xs mt-3 font-light tracking-[0.2em] uppercase">
+                Infinite • Potential • Consciousness
               </p>
             </div>
 
