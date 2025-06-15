@@ -21,7 +21,15 @@ const App = () => {
     
     // Initialize EmailJS
     emailjs.init("nZNy_SQwTWUNt2Tva");
+
+    // Update waitlist count
+    updateWaitlistCount();
   }, []);
+
+  const updateWaitlistCount = () => {
+    const waitlistData = JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
+    setWaitlistCount(waitlistData.length);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
