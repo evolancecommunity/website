@@ -599,6 +599,14 @@ Total waitlist members: ${existingData.length}`
               </div>
             )}
 
+            {/* Infinity Symbol - Representing Infinite Consciousness */}
+            <div className="mb-8 opacity-90">
+              <InfinitySymbol />
+              <p className="text-white/60 text-xs mt-2 font-light tracking-widest">
+                INFINITE POTENTIAL
+              </p>
+            </div>
+
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
               Transform Your
               <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
