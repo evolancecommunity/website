@@ -143,6 +143,73 @@ Total waitlist members: ${existingData.length}`
   };
 
   // SVG Components
+  const InfinitySymbol = () => (
+    <svg viewBox="0 0 200 100" className="w-24 h-12 mx-auto mb-8">
+      <defs>
+        <linearGradient id="infinityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#8B5CF6" />
+          <stop offset="30%" stopColor="#A78BFA" />
+          <stop offset="70%" stopColor="#EC4899" />
+          <stop offset="100%" stopColor="#F472B6" />
+        </linearGradient>
+        <filter id="infinityGlow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge> 
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <linearGradient id="infinityShimmer" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0" />
+          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+          <animateTransform attributeName="gradientTransform" type="translate" values="-200 0;200 0;-200 0" dur="3s" repeatCount="indefinite"/>
+        </linearGradient>
+      </defs>
+      
+      {/* Main infinity path */}
+      <path 
+        d="M50 50 C50 30, 70 30, 90 50 C110 70, 130 70, 150 50 C150 30, 130 30, 110 50 C90 70, 70 70, 50 50 Z" 
+        fill="none" 
+        stroke="url(#infinityGradient)" 
+        strokeWidth="8" 
+        strokeLinecap="round"
+        filter="url(#infinityGlow)"
+      >
+        <animate attributeName="stroke-width" values="8;12;8" dur="4s" repeatCount="indefinite" />
+      </path>
+      
+      {/* Inner glow */}
+      <path 
+        d="M50 50 C50 30, 70 30, 90 50 C110 70, 130 70, 150 50 C150 30, 130 30, 110 50 C90 70, 70 70, 50 50 Z" 
+        fill="none" 
+        stroke="url(#infinityGradient)" 
+        strokeWidth="4" 
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      
+      {/* Shimmer effect */}
+      <path 
+        d="M50 50 C50 30, 70 30, 90 50 C110 70, 130 70, 150 50 C150 30, 130 30, 110 50 C90 70, 70 70, 50 50 Z" 
+        fill="none" 
+        stroke="url(#infinityShimmer)" 
+        strokeWidth="6" 
+        strokeLinecap="round"
+      />
+      
+      {/* Floating particles */}
+      <circle cx="75" cy="40" r="1.5" fill="#A78BFA" opacity="0.8">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
+        <animateTransform attributeName="transform" type="translate" values="0,0;5,-5;0,0" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="125" cy="60" r="1" fill="#F472B6" opacity="0.6">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.5s" repeatCount="indefinite" />
+        <animateTransform attributeName="transform" type="translate" values="0,0;-3,3;0,0" dur="3.5s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  );
+
   const CosmicBackground = () => (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
       <defs>
