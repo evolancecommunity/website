@@ -142,6 +142,281 @@ Total waitlist members: ${existingData.length}`
     }
   };
 
+  // SVG Components
+  const CosmicBackground = () => (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="cosmicGradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.6" />
+          <stop offset="30%" stopColor="#6366F1" stopOpacity="0.4" />
+          <stop offset="70%" stopColor="#EC4899" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#1E1B4B" stopOpacity="0.8" />
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge> 
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#cosmicGradient)" />
+      <circle cx="200" cy="150" r="2" fill="#A78BFA" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="800" cy="100" r="1.5" fill="#F472B6" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1000" cy="300" r="1" fill="#38BDF8" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="300" cy="500" r="2.5" fill="#C084FC" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.7;0.1" dur="3.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="600" cy="200" r="1.8" fill="#F59E0B" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.9;0.2" dur="4.2s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  );
+
+  const MeditationSVG = () => (
+    <svg viewBox="0 0 400 300" className="w-full h-full">
+      <defs>
+        <linearGradient id="meditationGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#8B5CF6" />
+          <stop offset="50%" stopColor="#EC4899" />
+          <stop offset="100%" stopColor="#6366F1" />
+        </linearGradient>
+        <radialGradient id="aura" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor="#A78BFA" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.1" />
+        </radialGradient>
+      </defs>
+      
+      {/* Meditation aura */}
+      <ellipse cx="200" cy="120" rx="150" ry="80" fill="url(#aura)">
+        <animate attributeName="rx" values="150;170;150" dur="4s" repeatCount="indefinite" />
+        <animate attributeName="ry" values="80;90;80" dur="4s" repeatCount="indefinite" />
+      </ellipse>
+      
+      {/* Sitting figure */}
+      <path d="M200 200 Q180 180 160 190 Q140 200 140 220 Q140 240 160 245 L180 245 L180 260 Q180 270 190 270 L210 270 Q220 270 220 260 L220 245 L240 245 Q260 240 260 220 Q260 200 240 190 Q220 180 200 200Z" fill="url(#meditationGradient)" opacity="0.8"/>
+      
+      {/* Head */}
+      <circle cx="200" cy="160" r="25" fill="url(#meditationGradient)" opacity="0.9"/>
+      
+      {/* Chakra points */}
+      <circle cx="200" cy="140" r="3" fill="#F59E0B" opacity="0.8">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="170" r="3" fill="#06B6D4" opacity="0.8">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="190" r="3" fill="#10B981" opacity="0.8">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2.4s" repeatCount="indefinite" />
+      </circle>
+      
+      {/* Energy lines */}
+      <path d="M150 140 Q200 120 250 140" stroke="#A78BFA" strokeWidth="2" fill="none" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite" />
+      </path>
+      <path d="M160 200 Q200 180 240 200" stroke="#F472B6" strokeWidth="2" fill="none" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.5s" repeatCount="indefinite" />
+      </path>
+    </svg>
+  );
+
+  const ConsciousnessSVG = () => (
+    <svg viewBox="0 0 400 300" className="w-full h-full">
+      <defs>
+        <linearGradient id="consciousnessGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#6366F1" />
+          <stop offset="50%" stopColor="#8B5CF6" />
+          <stop offset="100%" stopColor="#EC4899" />
+        </linearGradient>
+        <radialGradient id="mindField" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#C084FC" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#1E1B4B" stopOpacity="0.1" />
+        </radialGradient>
+      </defs>
+      
+      {/* Consciousness field */}
+      <circle cx="200" cy="150" r="120" fill="url(#mindField)">
+        <animate attributeName="r" values="120;140;120" dur="6s" repeatCount="indefinite" />
+      </circle>
+      
+      {/* Brain/mind representation */}
+      <path d="M200 100 Q240 110 260 140 Q270 170 250 190 Q230 200 200 195 Q170 200 150 190 Q130 170 140 140 Q160 110 200 100Z" fill="url(#consciousnessGradient)" opacity="0.7"/>
+      
+      {/* Neural connections */}
+      <g stroke="#A78BFA" strokeWidth="1.5" fill="none" opacity="0.6">
+        <path d="M170 130 Q200 115 230 130">
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite" />
+        </path>
+        <path d="M160 150 Q200 135 240 150">
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.5s" repeatCount="indefinite" />
+        </path>
+        <path d="M170 170 Q200 155 230 170">
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="3s" repeatCount="indefinite" />
+        </path>
+      </g>
+      
+      {/* Expanding consciousness waves */}
+      <circle cx="200" cy="150" r="80" stroke="#F472B6" strokeWidth="2" fill="none" opacity="0.4">
+        <animate attributeName="r" values="80;100;80" dur="4s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.4;0.1;0.4" dur="4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="150" r="100" stroke="#38BDF8" strokeWidth="2" fill="none" opacity="0.3">
+        <animate attributeName="r" values="100;120;100" dur="5s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="5s" repeatCount="indefinite" />
+      </circle>
+      
+      {/* Thought particles */}
+      <circle cx="180" cy="120" r="2" fill="#F59E0B">
+        <animate attributeName="cy" values="120;80;120" dur="3s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="220" cy="130" r="1.5" fill="#10B981">
+        <animate attributeName="cy" values="130;90;130" dur="3.5s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="3.5s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  );
+
+  const SacredGeometrySVG = () => (
+    <svg viewBox="0 0 400 300" className="w-full h-full">
+      <defs>
+        <linearGradient id="geometryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#EC4899" />
+          <stop offset="50%" stopColor="#8B5CF6" />
+          <stop offset="100%" stopColor="#6366F1" />
+        </linearGradient>
+        <filter id="geometryGlow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge> 
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      
+      {/* Flower of Life pattern */}
+      <g transform="translate(200,150)" filter="url(#geometryGlow)">
+        <circle cx="0" cy="0" r="30" stroke="url(#geometryGradient)" strokeWidth="2" fill="none" opacity="0.8"/>
+        <circle cx="26" cy="0" r="30" stroke="url(#geometryGradient)" strokeWidth="2" fill="none" opacity="0.7"/>
+        <circle cx="-26" cy="0" r="30" stroke="url(#geometryGradient)" strokeWidth="2" fill="none" opacity="0.7"/>
+        <circle cx="13" cy="22" r="30" stroke="url(#geometryGradient)" strokeWidth="2" fill="none" opacity="0.7"/>
+        <circle cx="-13" cy="22" r="30" stroke="url(#geometryGradient)" strokeWidth="2" fill="none" opacity="0.7"/>
+        <circle cx="13" cy="-22" r="30" stroke="url(#geometryGradient)" strokeWidth="2" fill="none" opacity="0.7"/>
+        <circle cx="-13" cy="-22" r="30" stroke="url(#geometryGradient)" strokeWidth="2" fill="none" opacity="0.7"/>
+        
+        <animateTransform attributeName="transform" type="rotate" values="0 200 150;360 200 150" dur="20s" repeatCount="indefinite"/>
+      </g>
+      
+      {/* Mandala elements */}
+      <g transform="translate(200,150)">
+        <polygon points="0,-40 12,-12 40,0 12,12 0,40 -12,12 -40,0 -12,-12" fill="url(#geometryGradient)" opacity="0.3">
+          <animateTransform attributeName="transform" type="rotate" values="0;45;0" dur="8s" repeatCount="indefinite"/>
+        </polygon>
+        <polygon points="0,-25 7,-7 25,0 7,7 0,25 -7,7 -25,0 -7,-7" fill="url(#geometryGradient)" opacity="0.5">
+          <animateTransform attributeName="transform" type="rotate" values="0;-45;0" dur="6s" repeatCount="indefinite"/>
+        </polygon>
+      </g>
+      
+      {/* Sacred triangles */}
+      <g stroke="url(#geometryGradient)" strokeWidth="1.5" fill="none" opacity="0.6">
+        <polygon points="200,80 180,120 220,120">
+          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
+        </polygon>
+        <polygon points="200,220 180,180 220,180">
+          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3.5s" repeatCount="indefinite" />
+        </polygon>
+      </g>
+    </svg>
+  );
+
+  const JourneyBackground = () => (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="journeyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#1E1B4B" stopOpacity="0.9" />
+          <stop offset="30%" stopColor="#6366F1" stopOpacity="0.6" />
+          <stop offset="70%" stopColor="#8B5CF6" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#EC4899" stopOpacity="0.7" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#journeyGradient)" />
+      
+      {/* Constellation pattern */}
+      <g stroke="#A78BFA" strokeWidth="1" opacity="0.4">
+        <line x1="100" y1="100" x2="200" y2="150">
+          <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4s" repeatCount="indefinite" />
+        </line>
+        <line x1="200" y1="150" x2="350" y2="120">
+          <animate attributeName="opacity" values="0.2;0.6;0.2" dur="5s" repeatCount="indefinite" />
+        </line>
+        <line x1="350" y1="120" x2="500" y2="180">
+          <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4.5s" repeatCount="indefinite" />
+        </line>
+        <line x1="500" y1="180" x2="650" y2="140">
+          <animate attributeName="opacity" values="0.2;0.6;0.2" dur="3.8s" repeatCount="indefinite" />
+        </line>
+      </g>
+      
+      {/* Stars */}
+      <circle cx="100" cy="100" r="3" fill="#F59E0B" opacity="0.8">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="150" r="2" fill="#10B981" opacity="0.7">
+        <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="350" cy="120" r="2.5" fill="#F472B6" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="500" cy="180" r="2" fill="#38BDF8" opacity="0.8">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="650" cy="140" r="3" fill="#A78BFA" opacity="0.7">
+        <animate attributeName="opacity" values="0.5;0.9;0.5" dur="2.8s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  );
+
+  const WaitlistBackground = () => (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="waitlistGradient" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.3" />
+          <stop offset="50%" stopColor="#EC4899" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#1E1B4B" stopOpacity="0.8" />
+        </radialGradient>
+        <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#A78BFA" stopOpacity="0.3" />
+          <stop offset="50%" stopColor="#F472B6" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.3" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#waitlistGradient)" />
+      
+      {/* Flowing energy waves */}
+      <path d="M0,400 Q300,350 600,400 T1200,400 L1200,500 Q900,450 600,500 T0,500 Z" fill="url(#waveGradient)">
+        <animate attributeName="d" values="M0,400 Q300,350 600,400 T1200,400 L1200,500 Q900,450 600,500 T0,500 Z;M0,420 Q300,370 600,420 T1200,420 L1200,520 Q900,470 600,520 T0,520 Z;M0,400 Q300,350 600,400 T1200,400 L1200,500 Q900,450 600,500 T0,500 Z" dur="8s" repeatCount="indefinite" />
+      </path>
+      
+      {/* Floating orbs */}
+      <circle cx="150" cy="200" r="4" fill="#C084FC" opacity="0.6">
+        <animate attributeName="cy" values="200;150;200" dur="6s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="900" cy="300" r="3" fill="#F59E0B" opacity="0.7">
+        <animate attributeName="cy" values="300;250;300" dur="7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="450" cy="150" r="2" fill="#10B981" opacity="0.5">
+        <animate attributeName="cy" values="150;100;150" dur="5s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  );
+
   return (
     <div className="App">
       {/* Admin Panel Toggle */}
@@ -241,16 +516,7 @@ Total waitlist members: ${existingData.length}`
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1610209455607-89e8b3e0e393')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.4)'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-indigo-900/50 to-pink-900/50 z-10" />
+        <CosmicBackground />
         
         <div className="relative z-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-fade-in">
@@ -335,12 +601,8 @@ Total waitlist members: ${existingData.length}`
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4">
-                <img 
-                  src="https://images.pexels.com/photos/6931694/pexels-photo-6931694.jpeg" 
-                  alt="Spiritual Meditation"
-                  className="w-full h-40 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                />
+              <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 rounded-lg p-4">
+                <MeditationSVG />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Guided Meditation</h3>
               <p className="text-white/70 leading-relaxed">
@@ -349,12 +611,8 @@ Total waitlist members: ${existingData.length}`
             </div>
 
             <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4">
-                <img 
-                  src="https://images.unsplash.com/photo-1664042913846-abb18eba6226" 
-                  alt="Consciousness Expansion"
-                  className="w-full h-40 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                />
+              <div className="mb-4 h-40 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg p-4">
+                <ConsciousnessSVG />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Consciousness Expansion</h3>
               <p className="text-white/70 leading-relaxed">
@@ -363,12 +621,8 @@ Total waitlist members: ${existingData.length}`
             </div>
 
             <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4">
-                <img 
-                  src="https://images.pexels.com/photos/18161126/pexels-photo-18161126.jpeg" 
-                  alt="Sacred Geometry"
-                  className="w-full h-40 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                />
+              <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-lg p-4">
+                <SacredGeometrySVG />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Sacred Wisdom</h3>
               <p className="text-white/70 leading-relaxed">
@@ -381,16 +635,7 @@ Total waitlist members: ${existingData.length}`
 
       {/* Journey Section */}
       <section id="journey" className="py-20 relative overflow-hidden">
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url('https://images.pexels.com/photos/7663144/pexels-photo-7663144.jpeg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.3)'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/70 via-purple-900/70 to-pink-900/70" />
+        <JourneyBackground />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -439,28 +684,26 @@ Total waitlist members: ${existingData.length}`
                 name: "Sarah Chen",
                 role: "Meditation Teacher",
                 content: "Evolance opened doorways to consciousness I never knew existed. My daily practice has become a source of infinite wisdom and peace.",
-                avatar: "https://images.unsplash.com/photo-1652979849084-da60bb6a3846"
+                initials: "SC"
               },
               {
                 name: "Marcus Rivera",
                 role: "Spiritual Seeker",
                 content: "The journey through Evolance has been nothing short of miraculous. I've discovered my true purpose and connected with my higher self.",
-                avatar: "https://images.unsplash.com/photo-1652979849084-da60bb6a3846"
+                initials: "MR"
               },
               {
                 name: "Luna Patel",
                 role: "Energy Healer",
                 content: "This platform bridges ancient wisdom with modern understanding. My spiritual growth has accelerated beyond my wildest dreams.",
-                avatar: "https://images.unsplash.com/photo-1652979849084-da60bb6a3846"
+                initials: "LP"
               }
             ].map((testimonial, index) => (
               <div key={index} className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300">
                 <div className="flex items-center mb-4">
-                  <img 
-                    src={testimonial.avatar} 
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover mr-3 border-2 border-purple-400/50"
-                  />
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-white font-semibold text-sm">{testimonial.initials}</span>
+                  </div>
                   <div>
                     <h4 className="text-white font-semibold">{testimonial.name}</h4>
                     <p className="text-purple-300 text-sm">{testimonial.role}</p>
@@ -523,16 +766,7 @@ Total waitlist members: ${existingData.length}`
 
       {/* Waitlist Section */}
       <section id="waitlist" className="py-20 relative overflow-hidden">
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1636548974452-7217d5eab8dc')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.3)'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-indigo-900/80 to-pink-900/80" />
+        <WaitlistBackground />
         
         <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
