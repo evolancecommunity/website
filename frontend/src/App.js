@@ -127,6 +127,21 @@ Total waitlist members: ${existingData.length}`
     document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' });
   };
 
+  const toggleAdminPanel = () => {
+    setShowAdminPanel(!showAdminPanel);
+  };
+
+  const getWaitlistData = () => {
+    return JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
+  };
+
+  const clearWaitlist = () => {
+    if (window.confirm('Are you sure you want to clear all waitlist data?')) {
+      localStorage.removeItem('evolanceWaitlist');
+      updateWaitlistCount();
+    }
+  };
+
   return (
     <div className="App">
       {/* Navigation */}
