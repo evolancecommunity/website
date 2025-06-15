@@ -144,68 +144,147 @@ Total waitlist members: ${existingData.length}`
 
   // SVG Components
   const InfinitySymbol = () => (
-    <svg viewBox="0 0 200 100" className="w-24 h-12 mx-auto mb-8">
+    <svg viewBox="0 0 160 80" className="w-32 h-16 mx-auto mb-6">
       <defs>
-        <linearGradient id="infinityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="infinityGradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#8B5CF6" />
-          <stop offset="30%" stopColor="#A78BFA" />
-          <stop offset="70%" stopColor="#EC4899" />
-          <stop offset="100%" stopColor="#F472B6" />
+          <stop offset="25%" stopColor="#A78BFA" />
+          <stop offset="50%" stopColor="#C084FC" />
+          <stop offset="75%" stopColor="#F472B6" />
+          <stop offset="100%" stopColor="#EC4899" />
         </linearGradient>
-        <filter id="infinityGlow">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+        
+        <linearGradient id="infinityGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.8" />
+          <stop offset="50%" stopColor="#F472B6" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#EC4899" stopOpacity="0.8" />
+        </linearGradient>
+        
+        <filter id="glowEffect" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
           <feMerge> 
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>
           </feMerge>
         </filter>
-        <linearGradient id="infinityShimmer" x1="0%" y1="0%" x2="100%" y2="0%">
+        
+        <linearGradient id="flowingLight" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="objectBoundingBox">
           <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0" />
-          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.3" />
+          <stop offset="30%" stopColor="#FFFFFF" stopOpacity="0" />
+          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.8" />
+          <stop offset="70%" stopColor="#FFFFFF" stopOpacity="0" />
           <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-          <animateTransform attributeName="gradientTransform" type="translate" values="-200 0;200 0;-200 0" dur="3s" repeatCount="indefinite"/>
+          <animateTransform 
+            attributeName="gradientTransform" 
+            type="translate" 
+            values="-200 0;200 0;-200 0" 
+            dur="4s" 
+            repeatCount="indefinite"
+          />
         </linearGradient>
       </defs>
       
-      {/* Main infinity path */}
+      {/* Outer glow effect */}
       <path 
-        d="M50 50 C50 30, 70 30, 90 50 C110 70, 130 70, 150 50 C150 30, 130 30, 110 50 C90 70, 70 70, 50 50 Z" 
+        d="M30,40 C30,20 50,20 65,35 C80,50 95,50 110,35 C125,20 145,20 130,40 C130,60 110,60 95,45 C80,30 65,30 50,45 C35,60 15,60 30,40 Z" 
         fill="none" 
-        stroke="url(#infinityGradient)" 
-        strokeWidth="8" 
+        stroke="url(#infinityGlow)" 
+        strokeWidth="12" 
         strokeLinecap="round"
-        filter="url(#infinityGlow)"
+        opacity="0.3"
+        filter="url(#glowEffect)"
       >
-        <animate attributeName="stroke-width" values="8;12;8" dur="4s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite" />
       </path>
       
-      {/* Inner glow */}
+      {/* Main infinity symbol */}
       <path 
-        d="M50 50 C50 30, 70 30, 90 50 C110 70, 130 70, 150 50 C150 30, 130 30, 110 50 C90 70, 70 70, 50 50 Z" 
+        d="M30,40 C30,25 45,25 60,35 C75,45 90,45 105,35 C120,25 135,25 130,40 C130,55 115,55 100,45 C85,35 70,35 55,45 C40,55 25,55 30,40 Z" 
         fill="none" 
         stroke="url(#infinityGradient)" 
-        strokeWidth="4" 
-        strokeLinecap="round"
-        opacity="0.6"
-      />
-      
-      {/* Shimmer effect */}
-      <path 
-        d="M50 50 C50 30, 70 30, 90 50 C110 70, 130 70, 150 50 C150 30, 130 30, 110 50 C90 70, 70 70, 50 50 Z" 
-        fill="none" 
-        stroke="url(#infinityShimmer)" 
         strokeWidth="6" 
         strokeLinecap="round"
+        filter="url(#glowEffect)"
+      >
+        <animate attributeName="stroke-width" values="6;8;6" dur="4s" repeatCount="indefinite" />
+        <animateTransform 
+          attributeName="transform" 
+          type="scale" 
+          values="1;1.05;1" 
+          dur="6s" 
+          repeatCount="indefinite"
+          transformOrigin="80 40"
+        />
+      </path>
+      
+      {/* Inner light path */}
+      <path 
+        d="M30,40 C30,25 45,25 60,35 C75,45 90,45 105,35 C120,25 135,25 130,40 C130,55 115,55 100,45 C85,35 70,35 55,45 C40,55 25,55 30,40 Z" 
+        fill="none" 
+        stroke="url(#infinityGradient)" 
+        strokeWidth="3" 
+        strokeLinecap="round"
+        opacity="0.9"
       />
       
-      {/* Floating particles */}
-      <circle cx="75" cy="40" r="1.5" fill="#A78BFA" opacity="0.8">
-        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
-        <animateTransform attributeName="transform" type="translate" values="0,0;5,-5;0,0" dur="3s" repeatCount="indefinite"/>
+      {/* Flowing light effect */}
+      <path 
+        d="M30,40 C30,25 45,25 60,35 C75,45 90,45 105,35 C120,25 135,25 130,40 C130,55 115,55 100,45 C85,35 70,35 55,45 C40,55 25,55 30,40 Z" 
+        fill="none" 
+        stroke="url(#flowingLight)" 
+        strokeWidth="4" 
+        strokeLinecap="round"
+      />
+      
+      {/* Center intersection glow */}
+      <circle cx="80" cy="40" r="4" fill="url(#infinityGradient)" opacity="0.6">
+        <animate attributeName="r" values="3;6;3" dur="3s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
       </circle>
-      <circle cx="125" cy="60" r="1" fill="#F472B6" opacity="0.6">
-        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.5s" repeatCount="indefinite" />
-        <animateTransform attributeName="transform" type="translate" values="0,0;-3,3;0,0" dur="3.5s" repeatCount="indefinite"/>
+      
+      {/* Energy particles */}
+      <circle cx="50" cy="30" r="1.5" fill="#A78BFA" opacity="0.8">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" />
+        <animateTransform 
+          attributeName="transform" 
+          type="translate" 
+          values="0,0;3,-2;0,0" 
+          dur="4s" 
+          repeatCount="indefinite"
+        />
+      </circle>
+      
+      <circle cx="110" cy="50" r="1" fill="#F472B6" opacity="0.7">
+        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.8s" repeatCount="indefinite" />
+        <animateTransform 
+          attributeName="transform" 
+          type="translate" 
+          values="0,0;-2,3;0,0" 
+          dur="3.5s" 
+          repeatCount="indefinite"
+        />
+      </circle>
+      
+      <circle cx="65" cy="50" r="1.2" fill="#C084FC" opacity="0.6">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.3s" repeatCount="indefinite" />
+        <animateTransform 
+          attributeName="transform" 
+          type="translate" 
+          values="0,0;4,1;0,0" 
+          dur="4.2s" 
+          repeatCount="indefinite"
+        />
+      </circle>
+      
+      <circle cx="95" cy="30" r="0.8" fill="#38BDF8" opacity="0.9">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="1.8s" repeatCount="indefinite" />
+        <animateTransform 
+          attributeName="transform" 
+          type="translate" 
+          values="0,0;-3,-1;0,0" 
+          dur="3.8s" 
+          repeatCount="indefinite"
+        />
       </circle>
     </svg>
   );
