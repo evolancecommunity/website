@@ -18,7 +18,7 @@ const App = () => {
     document.documentElement.style.scrollBehavior = 'smooth';
     
     // Initialize EmailJS
-    emailjs.init("YOUR_PUBLIC_KEY"); // You'll need to replace this with actual EmailJS public key
+    emailjs.init("nZNy_SQwTWUNt2Tva");
   }, []);
 
   const handleInputChange = (e) => {
