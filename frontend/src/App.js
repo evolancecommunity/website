@@ -78,10 +78,10 @@ const App = () => {
 
       // EmailJS service configuration
       const templateParams = {
-        to_email: 'founder@evolance.info',
-        subject: `Requesting Waitlist ${formData.firstName} ${formData.lastName} ${formData.email}`,
+        to_name: 'Evolance Founder',
         from_name: `${formData.firstName} ${formData.lastName}`,
         from_email: formData.email,
+        subject: `Requesting Waitlist ${formData.firstName} ${formData.lastName} ${formData.email}`,
         message: `New waitlist signup:
         
 Name: ${formData.firstName} ${formData.lastName}
@@ -144,13 +144,14 @@ Total waitlist members: ${existingData.length}`
 
   return (
     <div className="App">
-      {/* Admin Panel Toggle (Hidden Button) */}
-      <div 
-        className="fixed bottom-4 right-4 z-50"
-        onDoubleClick={toggleAdminPanel}
+      {/* Admin Panel Toggle */}
+      <button 
+        className="fixed bottom-4 right-4 z-40 w-8 h-8 bg-purple-600/20 rounded-full opacity-20 hover:opacity-100 transition-opacity duration-300"
+        onClick={toggleAdminPanel}
+        title="Admin Panel"
       >
-        <div className="w-4 h-4 bg-transparent cursor-pointer" title="Double-click for admin"></div>
-      </div>
+        <span className="text-white text-xs">⚙️</span>
+      </button>
 
       {/* Admin Panel */}
       {showAdminPanel && (
@@ -211,23 +212,24 @@ Total waitlist members: ${existingData.length}`
           </div>
         </div>
       )}
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-black/20 backdrop-blur-lg border-b border-white/10">
+      <nav className="fixed top-0 w-full z-30 bg-black/20 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <div className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Evolance
               </div>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-8">
-                <a href="#features" className="text-white/80 hover:text-white transition-colors duration-300">Features</a>
-                <a href="#journey" className="text-white/80 hover:text-white transition-colors duration-300">Journey</a>
-                <a href="#testimonials" className="text-white/80 hover:text-white transition-colors duration-300">Stories</a>
+                <a href="#features" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Features</a>
+                <a href="#journey" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Journey</a>
+                <a href="#testimonials" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Stories</a>
                 <button 
                   onClick={scrollToWaitlist}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 text-sm font-medium"
                 >
                   Join Waitlist
                 </button>
@@ -250,144 +252,125 @@ Total waitlist members: ${existingData.length}`
         />
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-indigo-900/50 to-pink-900/50 z-10" />
         
-        <div className="relative z-20 text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-fade-in">
             {/* Waitlist Counter */}
             {waitlistCount > 0 && (
-              <div className="mb-8 animate-pulse">
-                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-6 py-3 border border-purple-400/30">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
+              <div className="mb-6">
+                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-4 py-2 border border-purple-400/30">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"></div>
                   <span className="text-white/90 text-sm font-medium">
-                    🚀 {waitlistCount} consciousness explorers have joined our journey
+                    {waitlistCount} people have joined the waitlist
                   </span>
                 </div>
               </div>
             )}
 
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight">
-              <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 bg-clip-text text-transparent animate-pulse">
-                Evolve Your
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                Consciousness
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
+              Transform Your
+              <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
+                Consciousness Journey
               </span>
             </h1>
             
-            <p className="text-xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-              Embark on a <span className="text-purple-300 font-semibold">transformative journey</span> of self-discovery and spiritual awakening. 
-              <br />
-              Unlock your <span className="text-pink-300 font-semibold">infinite potential</span> and connect with your highest self.
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Discover personalized spiritual practices, meditation techniques, and consciousness development 
+              tools designed to unlock your highest potential.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button 
                 onClick={scrollToWaitlist}
-                className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-full text-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl relative overflow-hidden min-w-[280px]"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg text-base font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                <span className="relative z-10 flex items-center justify-center">
-                  <span className="mr-2">✨</span>
-                  Begin Your Journey
-                  <span className="ml-2">→</span>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                Get Early Access
               </button>
               
-              <button className="group text-white/90 hover:text-white px-10 py-5 rounded-full border-2 border-white/30 hover:border-white/60 transition-all duration-300 backdrop-blur-sm hover:backdrop-blur-md text-xl font-medium min-w-[200px]">
-                <span className="flex items-center justify-center">
-                  <span className="mr-2">🎥</span>
-                  Watch Preview
-                </span>
+              <button className="text-white/80 hover:text-white px-8 py-3 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm text-base font-medium">
+                Learn More
               </button>
             </div>
 
             {/* Key Benefits */}
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl">🧘</span>
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-16">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white text-sm">🧘</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Guided Meditation</h3>
-                <p className="text-white/70 text-sm">Personalized spiritual practices</p>
+                <h3 className="text-base font-semibold text-white mb-2">Guided Meditation</h3>
+                <p className="text-white/70 text-sm">Personalized practices for inner peace</p>
               </div>
               
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl">🌌</span>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white text-sm">🌌</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Consciousness Expansion</h3>
+                <h3 className="text-base font-semibold text-white mb-2">Consciousness Expansion</h3>
                 <p className="text-white/70 text-sm">Advanced awareness techniques</p>
               </div>
               
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl">⚡</span>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white text-sm">⚡</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Ancient Wisdom</h3>
-                <p className="text-white/70 text-sm">Sacred teachings & practices</p>
+                <h3 className="text-base font-semibold text-white mb-2">Ancient Wisdom</h3>
+                <p className="text-white/70 text-sm">Time-tested spiritual teachings</p>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Enhanced Floating Elements */}
-        <div className="absolute top-1/4 left-10 w-6 h-6 bg-purple-400 rounded-full animate-float opacity-60" />
-        <div className="absolute top-1/3 right-16 w-4 h-4 bg-pink-400 rounded-full animate-bounce opacity-50" />
-        <div className="absolute bottom-1/3 left-1/4 w-5 h-5 bg-indigo-400 rounded-full animate-ping opacity-40" />
-        <div className="absolute top-3/4 right-1/3 w-3 h-3 bg-purple-300 rounded-full animate-pulse opacity-70" />
-        <div className="absolute bottom-1/4 left-1/2 w-4 h-4 bg-pink-300 rounded-full animate-bounce opacity-50" style={{animationDelay: '1s'}} />
       </section>
 
       {/* Features Section */}
       <section id="features" className="py-20 bg-gradient-to-br from-slate-900 to-purple-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
               Unlock Your Spiritual Potential
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-lg text-white/70 max-w-3xl mx-auto">
               Discover the tools and guidance needed to elevate your consciousness and transform your life
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="group bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl">
-              <div className="mb-6">
+            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
+              <div className="mb-4">
                 <img 
                   src="https://images.pexels.com/photos/6931694/pexels-photo-6931694.jpeg" 
                   alt="Spiritual Meditation"
-                  className="w-full h-48 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-40 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-4">Guided Meditation</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Guided Meditation</h3>
               <p className="text-white/70 leading-relaxed">
                 Experience profound inner peace through personalized meditation practices tailored to your spiritual journey.
               </p>
             </div>
 
-            <div className="group bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl">
-              <div className="mb-6">
+            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
+              <div className="mb-4">
                 <img 
                   src="https://images.unsplash.com/photo-1664042913846-abb18eba6226" 
                   alt="Consciousness Expansion"
-                  className="w-full h-48 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-40 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-4">Consciousness Expansion</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Consciousness Expansion</h3>
               <p className="text-white/70 leading-relaxed">
                 Expand your awareness and tap into higher states of consciousness through proven techniques and practices.
               </p>
             </div>
 
-            <div className="group bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl">
-              <div className="mb-6">
+            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
+              <div className="mb-4">
                 <img 
                   src="https://images.pexels.com/photos/18161126/pexels-photo-18161126.jpeg" 
                   alt="Sacred Geometry"
-                  className="w-full h-48 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-40 object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-4">Sacred Wisdom</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Sacred Wisdom</h3>
               <p className="text-white/70 leading-relaxed">
                 Access ancient wisdom and sacred teachings that illuminate the path to spiritual enlightenment.
               </p>
@@ -411,10 +394,10 @@ Total waitlist members: ${existingData.length}`
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
               Your Consciousness Journey
             </h2>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
+            <p className="text-lg text-white/80 max-w-3xl mx-auto">
               Navigate through levels of awareness and unlock your true potential
             </p>
           </div>
@@ -427,11 +410,11 @@ Total waitlist members: ${existingData.length}`
               { step: "04", title: "Transcendence", description: "Achieve higher states of consciousness and inner peace" }
             ].map((item, index) => (
               <div key={index} className="text-center group">
-                <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-white group-hover:scale-110 transition-transform duration-300">
                   {item.step}
                 </div>
-                <h3 className="text-2xl font-semibold text-white mb-4">{item.title}</h3>
-                <p className="text-white/70">{item.description}</p>
+                <h3 className="text-lg font-semibold text-white mb-3">{item.title}</h3>
+                <p className="text-white/70 text-sm">{item.description}</p>
               </div>
             ))}
           </div>
@@ -442,10 +425,10 @@ Total waitlist members: ${existingData.length}`
       <section id="testimonials" className="py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
               Transformation Stories
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-lg text-white/70 max-w-3xl mx-auto">
               Real experiences from those who have embraced their spiritual evolution
             </p>
           </div>
@@ -471,19 +454,19 @@ Total waitlist members: ${existingData.length}`
                 avatar: "https://images.unsplash.com/photo-1652979849084-da60bb6a3846"
               }
             ].map((testimonial, index) => (
-              <div key={index} className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:border-purple-400/50 transition-all duration-300">
-                <div className="flex items-center mb-6">
+              <div key={index} className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300">
+                <div className="flex items-center mb-4">
                   <img 
                     src={testimonial.avatar} 
                     alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4 border-2 border-purple-400/50"
+                    className="w-12 h-12 rounded-full object-cover mr-3 border-2 border-purple-400/50"
                   />
                   <div>
-                    <h4 className="text-white font-semibold text-lg">{testimonial.name}</h4>
-                    <p className="text-purple-300">{testimonial.role}</p>
+                    <h4 className="text-white font-semibold">{testimonial.name}</h4>
+                    <p className="text-purple-300 text-sm">{testimonial.role}</p>
                   </div>
                 </div>
-                <p className="text-white/80 leading-relaxed italic">"{testimonial.content}"</p>
+                <p className="text-white/80 leading-relaxed italic text-sm">"{testimonial.content}"</p>
               </div>
             ))}
           </div>
@@ -494,8 +477,8 @@ Total waitlist members: ${existingData.length}`
       <section className="py-20 bg-gradient-to-br from-slate-900 to-purple-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6 text-white">Frequently Asked Questions</h2>
-            <p className="text-xl text-white/70">Everything you need to know about your spiritual journey</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Frequently Asked Questions</h2>
+            <p className="text-lg text-white/70">Everything you need to know about your spiritual journey</p>
           </div>
 
           <div className="space-y-4">
@@ -517,18 +500,18 @@ Total waitlist members: ${existingData.length}`
                 answer: "We're currently in development and accepting early access members to our waitlist. Waitlist members will receive exclusive early access, special pricing, and the opportunity to shape the platform's development."
               }
             ].map((faq, index) => (
-              <div key={index} className="bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
+              <div key={index} className="bg-white/5 backdrop-blur-lg rounded-lg border border-white/10 overflow-hidden">
                 <button
-                  className="w-full px-8 py-6 text-left hover:bg-white/5 transition-colors duration-200 flex justify-between items-center"
+                  className="w-full px-6 py-4 text-left hover:bg-white/5 transition-colors duration-200 flex justify-between items-center"
                   onClick={() => toggleAccordion(index)}
                 >
-                  <h3 className="text-lg font-semibold text-white pr-4">{faq.question}</h3>
+                  <h3 className="text-base font-semibold text-white pr-4">{faq.question}</h3>
                   <span className={`text-purple-400 transform transition-transform duration-200 ${activeAccordion === index ? 'rotate-180' : ''}`}>
                     ▼
                   </span>
                 </button>
                 {activeAccordion === index && (
-                  <div className="px-8 pb-6 text-white/70 leading-relaxed">
+                  <div className="px-6 pb-4 text-white/70 leading-relaxed text-sm">
                     {faq.answer}
                   </div>
                 )}
@@ -551,59 +534,49 @@ Total waitlist members: ${existingData.length}`
         />
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-indigo-900/80 to-pink-900/80" />
         
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-6xl font-bold mb-6 text-white">
-            Ready to
-            <span className="bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent"> Evolve</span>?
+        <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            Ready to Begin Your Journey?
           </h2>
-          <p className="text-2xl text-white/80 mb-12 max-w-2xl mx-auto">
-            Join thousands of consciousness explorers on the waitlist and be among the first to experience 
-            the future of spiritual growth.
+          <p className="text-lg text-white/80 mb-12">
+            Join our waitlist to be among the first to experience Evolance and receive exclusive early access.
           </p>
 
           <div className="max-w-md mx-auto">
             {isWaitlistSubmitted ? (
-              <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-lg border border-green-400/50 rounded-2xl p-8 animate-pulse">
-                <div className="text-6xl mb-6">🎉</div>
-                <h3 className="text-3xl font-semibold text-white mb-4">Welcome to the Journey!</h3>
-                <p className="text-green-300 text-lg mb-4">You're now on our waitlist. The founder will be in touch soon!</p>
-                <div className="flex items-center justify-center space-x-2 text-sm text-white/60">
-                  <span>👥 You're member #{waitlistCount}</span>
-                  <span>•</span>
-                  <span>📧 Check your email for next steps</span>
-                </div>
+              <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-lg border border-green-400/50 rounded-xl p-6">
+                <div className="text-3xl mb-4">✅</div>
+                <h3 className="text-xl font-semibold text-white mb-2">Welcome to the Journey!</h3>
+                <p className="text-green-300 mb-2">You're now on our waitlist.</p>
+                <p className="text-white/60 text-sm">You're member #{waitlistCount} • Check your email for updates</p>
               </div>
             ) : (
-              <form onSubmit={handleWaitlistSubmit} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+              <form onSubmit={handleWaitlistSubmit} className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 {submitError && (
                   <div className="mb-4 p-3 bg-red-500/20 border border-red-400/50 rounded-lg text-red-300 text-sm">
                     {submitError}
                   </div>
                 )}
                 
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      placeholder="First Name"
-                      required
-                      className="w-full px-6 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      placeholder="Last Name"
-                      required
-                      className="w-full px-6 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
-                    />
-                  </div>
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    placeholder="First Name"
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                  />
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Last Name"
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                  />
                 </div>
                 
                 <div className="mb-6">
@@ -612,29 +585,29 @@ Total waitlist members: ${existingData.length}`
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Enter your email address"
+                    placeholder="Email Address"
                     required
-                    className="w-full px-6 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
                   />
                 </div>
                 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isSubmitting ? (
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                      Joining Waitlist...
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                      Joining...
                     </div>
                   ) : (
                     "Join the Waitlist"
                   )}
                 </button>
                 
-                <p className="text-white/60 text-sm mt-4">
-                  Early access • Exclusive pricing • Shape the future
+                <p className="text-white/60 text-xs mt-3">
+                  Early access • Exclusive updates • No spam, ever
                 </p>
               </form>
             )}
@@ -647,27 +620,16 @@ Total waitlist members: ${existingData.length}`
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="col-span-2">
-              <div className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+              <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
                 Evolance
               </div>
-              <p className="text-white/70 mb-6 max-w-md">
-                Empowering consciousness evolution through ancient wisdom and modern technology.
+              <p className="text-white/70 mb-6 max-w-md text-sm">
+                Empowering consciousness evolution through the perfect blend of ancient wisdom and modern technology.
               </p>
-              <div className="flex space-x-4">
-                <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors duration-300">
-                  <span className="text-white">f</span>
-                </a>
-                <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors duration-300">
-                  <span className="text-white">t</span>
-                </a>
-                <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors duration-300">
-                  <span className="text-white">in</span>
-                </a>
-              </div>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Platform</h4>
-              <ul className="space-y-2 text-white/70">
+              <h4 className="text-white font-semibold mb-4 text-sm">Platform</h4>
+              <ul className="space-y-2 text-white/70 text-sm">
                 <li><a href="#" className="hover:text-white transition-colors duration-200">Features</a></li>
                 <li><a href="#" className="hover:text-white transition-colors duration-200">Pricing</a></li>
                 <li><a href="#" className="hover:text-white transition-colors duration-200">Community</a></li>
@@ -675,8 +637,8 @@ Total waitlist members: ${existingData.length}`
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-white/70">
+              <h4 className="text-white font-semibold mb-4 text-sm">Company</h4>
+              <ul className="space-y-2 text-white/70 text-sm">
                 <li><a href="#" className="hover:text-white transition-colors duration-200">About</a></li>
                 <li><a href="#" className="hover:text-white transition-colors duration-200">Blog</a></li>
                 <li><a href="#" className="hover:text-white transition-colors duration-200">Privacy</a></li>
@@ -684,7 +646,7 @@ Total waitlist members: ${existingData.length}`
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/60">
+          <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/60 text-sm">
             <p>&copy; 2024 Evolance. All rights reserved. Evolving consciousness, one soul at a time.</p>
           </div>
         </div>
