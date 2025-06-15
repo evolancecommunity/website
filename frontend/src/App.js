@@ -250,10 +250,22 @@ Total waitlist members: ${existingData.length}`
         />
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-indigo-900/50 to-pink-900/50 z-10" />
         
-        <div className="relative z-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-20 text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-fade-in">
-            <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 bg-clip-text text-transparent">
+            {/* Waitlist Counter */}
+            {waitlistCount > 0 && (
+              <div className="mb-8 animate-pulse">
+                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-6 py-3 border border-purple-400/30">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
+                  <span className="text-white/90 text-sm font-medium">
+                    🚀 {waitlistCount} consciousness explorers have joined our journey
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight">
+              <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 bg-clip-text text-transparent animate-pulse">
                 Evolve Your
               </span>
               <br />
@@ -261,29 +273,69 @@ Total waitlist members: ${existingData.length}`
                 Consciousness
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Embark on a transformative journey of self-discovery and spiritual awakening. 
-              Unlock your infinite potential and connect with your highest self.
+            
+            <p className="text-xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
+              Embark on a <span className="text-purple-300 font-semibold">transformative journey</span> of self-discovery and spiritual awakening. 
+              <br />
+              Unlock your <span className="text-pink-300 font-semibold">infinite potential</span> and connect with your highest self.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
               <button 
                 onClick={scrollToWaitlist}
-                className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl relative overflow-hidden"
+                className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-full text-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl relative overflow-hidden min-w-[280px]"
               >
-                <span className="relative z-10">Begin Your Journey</span>
+                <span className="relative z-10 flex items-center justify-center">
+                  <span className="mr-2">✨</span>
+                  Begin Your Journey
+                  <span className="ml-2">→</span>
+                </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </button>
-              <button className="text-white/80 hover:text-white px-8 py-4 rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm">
-                Learn More
+              
+              <button className="group text-white/90 hover:text-white px-10 py-5 rounded-full border-2 border-white/30 hover:border-white/60 transition-all duration-300 backdrop-blur-sm hover:backdrop-blur-md text-xl font-medium min-w-[200px]">
+                <span className="flex items-center justify-center">
+                  <span className="mr-2">🎥</span>
+                  Watch Preview
+                </span>
               </button>
+            </div>
+
+            {/* Key Benefits */}
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">🧘</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Guided Meditation</h3>
+                <p className="text-white/70 text-sm">Personalized spiritual practices</p>
+              </div>
+              
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">🌌</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Consciousness Expansion</h3>
+                <p className="text-white/70 text-sm">Advanced awareness techniques</p>
+              </div>
+              
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">⚡</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Ancient Wisdom</h3>
+                <p className="text-white/70 text-sm">Sacred teachings & practices</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Floating Elements */}
-        <div className="absolute top-1/4 left-10 w-4 h-4 bg-purple-400 rounded-full animate-pulse opacity-60" />
-        <div className="absolute top-3/4 right-20 w-6 h-6 bg-pink-400 rounded-full animate-bounce opacity-40" />
-        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-indigo-400 rounded-full animate-ping opacity-50" />
+        {/* Enhanced Floating Elements */}
+        <div className="absolute top-1/4 left-10 w-6 h-6 bg-purple-400 rounded-full animate-float opacity-60" />
+        <div className="absolute top-1/3 right-16 w-4 h-4 bg-pink-400 rounded-full animate-bounce opacity-50" />
+        <div className="absolute bottom-1/3 left-1/4 w-5 h-5 bg-indigo-400 rounded-full animate-ping opacity-40" />
+        <div className="absolute top-3/4 right-1/3 w-3 h-3 bg-purple-300 rounded-full animate-pulse opacity-70" />
+        <div className="absolute bottom-1/4 left-1/2 w-4 h-4 bg-pink-300 rounded-full animate-bounce opacity-50" style={{animationDelay: '1s'}} />
       </section>
 
       {/* Features Section */}
