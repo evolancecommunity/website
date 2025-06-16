@@ -679,15 +679,14 @@ Total waitlist members: ${existingData.length}`
             )}
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
-              Transform Your
+              Ever Wondered
               <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-                Consciousness Journey
+                Who You Really Are ?
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Discover personalized spiritual practices, meditation techniques, and consciousness development 
-              tools designed to unlock your highest potential.
+              Evolance isn’t just an app—it’s a mirror to your soul, guiding you to break free from expectations, rediscover who you truly are, and grow into the life you were meant to live.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -709,24 +708,24 @@ Total waitlist members: ${existingData.length}`
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-white text-sm">🧘</span>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Guided Meditation</h3>
-                <p className="text-white/70 text-sm">Personalized practices for inner peace</p>
+                <h3 className="text-base font-semibold text-white mb-2">Guided Core Questioning Sessions</h3>
+                <p className="text-white/70 text-sm">Get to know your Truth</p>
               </div>
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white text-sm">🌌</span>
+                  <span className="text-white text-sm">♾️</span>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Consciousness Expansion</h3>
-                <p className="text-white/70 text-sm">Advanced awareness techniques</p>
+                <h3 className="text-base font-semibold text-white mb-2">Visualize Yourself Across Timelines</h3>
+                <p className="text-white/70 text-sm">Make better Decisions using Our Unique Stand-Alone feature visualizing yourself across your Past, Present and Future - Based on Your Real Story</p>
               </div>
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-white text-sm">⚡</span>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Ancient Wisdom</h3>
-                <p className="text-white/70 text-sm">Time-tested spiritual teachings</p>
+                <h3 className="text-base font-semibold text-white mb-2">Ancient Wisdom Meets Modern Technology</h3>
+                <p className="text-white/70 text-sm">Technology is no more limited to material life. Evolance is Proud to Prove it</p>
               </div>
             </div>
           </div>
@@ -750,9 +749,9 @@ Total waitlist members: ${existingData.length}`
               <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 rounded-lg p-4">
                 <MeditationSVG />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Guided Meditation</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Emotionally Present Personal Bubble</h3>
               <p className="text-white/70 leading-relaxed">
-                Experience profound inner peace through personalized meditation practices tailored to your spiritual journey.
+                Tell your whole story to the bubble and it will understand, empathize and help you feel heard. Each bubble session becomes a story and saved in your Evolance application.
               </p>
             </div>
 
@@ -760,20 +759,18 @@ Total waitlist members: ${existingData.length}`
               <div className="mb-4 h-40 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg p-4">
                 <ConsciousnessSVG />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Consciousness Expansion</h3>
+              <h3 className="text-xl font-semibold text-white mb-3"> Overcome and Appreciate</h3>
               <p className="text-white/70 leading-relaxed">
-                Expand your awareness and tap into higher states of consciousness through proven techniques and practices.
-              </p>
+                  Ever felt stuck with hardships or, are underappreciated and uncelebrated? Each story saved in your application generates an intelligent To-Do list with challenges to help you overcome hardships, appreciate and celebrate yourself.              </p>
             </div>
 
             <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
               <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-lg p-4">
                 <SacredGeometrySVG />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Sacred Wisdom</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Visualize your Cosmic Presence</h3>
               <p className="text-white/70 leading-relaxed">
-                Access ancient wisdom and sacred teachings that illuminate the path to spiritual enlightenment.
-              </p>
+                  The Deep Awareness feature enables you to go deep within yourself and be aware that you are yourself the reality. Evolance helps you grow beyond that aligning you with your purpose.              </p>
             </div>
           </div>
         </div>
@@ -795,10 +792,10 @@ Total waitlist members: ${existingData.length}`
 
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { step: "01", title: "Awakening", description: "Begin your spiritual journey with guided awareness practices" },
-              { step: "02", title: "Exploration", description: "Dive deeper into consciousness with advanced techniques" },
-              { step: "03", title: "Integration", description: "Integrate insights into your daily life and relationships" },
-              { step: "04", title: "Transcendence", description: "Achieve higher states of consciousness and inner peace" }
+              { step: "01", title: "Awakening", description: "We are partnering with spiritual mentors for you, so you could focus on your journey" },
+              { step: "02", title: "Video Lessons", description: "Learn from leading psychologists and spiritual mentors" },
+              { step: "03", title: "Integration", description: "Integrate your material life with spiritual life and be in Oneness" },
+              { step: "04", title: "Transcendence", description: "Achieve higher states of consciousness" }
             ].map((item, index) => (
               <div key={index} className="text-center group">
                 <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-white group-hover:scale-110 transition-transform duration-300">
@@ -820,7 +817,7 @@ Total waitlist members: ${existingData.length}`
               Transformation Stories
             </h2>
             <p className="text-lg text-white/70 max-w-3xl mx-auto">
-              Real experiences from those who have embraced their spiritual evolution
+              Real experiences from those who want to embrace their spiritual evolution
             </p>
           </div>
 
@@ -829,19 +826,19 @@ Total waitlist members: ${existingData.length}`
               {
                 name: "Sarah Chen",
                 role: "Meditation Teacher",
-                content: "Evolance opened doorways to consciousness I never knew existed. My daily practice has become a source of infinite wisdom and peace.",
+                content: "Evolance opened doorways to consciousness I never knew existed. I can't wait to know what my real purpose of life is.",
                 initials: "SC"
               },
               {
                 name: "Marcus Rivera",
                 role: "Spiritual Seeker",
-                content: "The journey through Evolance has been nothing short of miraculous. I've discovered my true purpose and connected with my higher self.",
+                content: "I have used various technologies and guidances but have never gone beyond meditation. I want to really overcome my hardhips and know my true purpose and connect with my higher self.",
                 initials: "MR"
               },
               {
                 name: "Luna Patel",
                 role: "Energy Healer",
-                content: "This platform bridges ancient wisdom with modern understanding. My spiritual growth has accelerated beyond my wildest dreams.",
+                content: "I have always believed that ancient wisdom was all about freedom and not being a part of a conservative society. I found Evolance is breaking the silence finally, and i waitlisted for it.",
                 initials: "LP"
               }
             ].map((testimonial, index) => (
