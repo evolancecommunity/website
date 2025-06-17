@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List
 import uuid
 from datetime import datetime
@@ -35,6 +35,19 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+# Waitlist models
+class WaitlistEntry(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    first_name: str
+    last_name: str
+    email: EmailStr
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class WaitlistEntryCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
@@ -51,6 +64,32 @@ async def create_status_check(input: StatusCheckCreate):
 async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
+
+# Waitlist endpoints
+@api_router.post("/waitlist", response_model=WaitlistEntry)
+async def create_waitlist_entry(input: WaitlistEntryCreate):
+    entry_dict = input.dict()
+    entry_obj = WaitlistEntry(**entry_dict)
+    await db.waitlist.insert_one(entry_obj.dict())
+    return entry_obj
+
+
+@api_router.get("/waitlist", response_model=List[WaitlistEntry])
+async def get_waitlist_entries():
+    entries = await db.waitlist.find().to_list(1000)
+    return [WaitlistEntry(**entry) for entry in entries]
+
+
+@api_router.get("/waitlist/count")
+async def get_waitlist_count():
+    count = await db.waitlist.count_documents({})
+    return {"count": count}
+
+
+@api_router.delete("/waitlist")
+async def clear_waitlist():
+    result = await db.waitlist.delete_many({})
+    return {"deleted": result.deleted_count}
 
 # Include the router in the main app
 app.include_router(api_router)
