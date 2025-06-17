@@ -103,7 +103,10 @@ async def get_emailjs_contacts_count():
         logging.error("EmailJS credentials not configured")
         return {"count": 0}
 
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
     url = f"https://api.emailjs.com/api/v1/accounts/{account_id}/contacts"
     try:
         resp = requests.get(url, headers=headers, timeout=10)
@@ -134,7 +137,8 @@ app.add_middleware(
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 

@@ -155,3 +155,5 @@ agent_communication:
     message: "Implemented waitlist API and frontend live counter"
   - agent: "main"
     message: "Added EmailJS count endpoint and improved counter position"
+  - agent: "main"
+    message: "Fixed style issues in server code"
