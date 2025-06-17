@@ -34,9 +34,20 @@ const App = () => {
   const fetchWaitlistCount = async () => {
     try {
       const res = await axios.get('/api/emailjs/contacts/count');
-      setWaitlistCount(res.data.count);
+      if (res.data.count === 0) {
+        const local = await axios.get('/api/waitlist/count');
+        setWaitlistCount(local.data.count);
+      } else {
+        setWaitlistCount(res.data.count);
+      }
     } catch (err) {
       console.error('Failed to fetch waitlist count', err);
+      try {
+        const local = await axios.get('/api/waitlist/count');
+        setWaitlistCount(local.data.count);
+      } catch (err2) {
+        console.error('Failed to fetch local waitlist count', err2);
+      }
     }
   };
 

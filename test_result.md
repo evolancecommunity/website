@@ -120,6 +120,12 @@ backend:
       - working: true
         agent: "main"
         comment: "Added EmailJS contact count endpoint"
+      - working: false
+        agent: "user"
+        comment: "Submission failed with error message"
+      - working: true
+        agent: "main"
+        comment: "Fixed JSON serialization and added DB guards"
 frontend:
   - task: "Display live waitlist counter"
     implemented: true
@@ -138,6 +144,12 @@ frontend:
       - working: true
         agent: "main"
         comment: "Improved counter design and fetches EmailJS count"
+      - working: false
+        agent: "user"
+        comment: "Counter missing above form"
+      - working: true
+        agent: "main"
+        comment: "Ensured counter displays when count is fetched"
 metadata:
   created_by: "main_agent"
   version: "1.0"
@@ -157,3 +169,7 @@ agent_communication:
     message: "Added EmailJS count endpoint and improved counter position"
   - agent: "main"
     message: "Fixed style issues in server code"
+  - agent: "main"
+    message: "Added local file fallback for waitlist and improved count fetching"
+  - agent: "main"
+    message: "Fixed waitlist JSON save bug and ensured counter visibility"
