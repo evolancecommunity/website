@@ -24,7 +24,8 @@ const App = () => {
     // Initialize EmailJS
     emailjs.init("nZNy_SQwTWUNt2Tva");
 
-    // Fetch waitlist data from backend
+    // Fetch waitlist data for admin panel and emailjs count for counter
+    fetchWaitlistCount();
     fetchWaitlistData();
     const interval = setInterval(fetchWaitlistCount, 10000);
     return () => clearInterval(interval);
@@ -32,7 +33,7 @@ const App = () => {
 
   const fetchWaitlistCount = async () => {
     try {
-      const res = await axios.get('/api/waitlist/count');
+      const res = await axios.get('/api/emailjs/contacts/count');
       setWaitlistCount(res.data.count);
     } catch (err) {
       console.error('Failed to fetch waitlist count', err);
@@ -43,7 +44,6 @@ const App = () => {
     try {
       const res = await axios.get('/api/waitlist');
       setWaitlistData(res.data);
-      setWaitlistCount(res.data.length);
     } catch (err) {
       console.error('Failed to fetch waitlist data', err);
     }
@@ -106,12 +106,12 @@ Total waitlist members: ${waitlistCount + 1}`
 
       console.log("Waitlist signup successful:", entryData);
       
-      // Refresh waitlist data
+      // Refresh waitlist data and count
       await fetchWaitlistData();
-      
+      await fetchWaitlistCount();
+
       setIsWaitlistSubmitted(true);
       setFormData({ firstName: "", lastName: "", email: "" });
-      setTimeout(() => setIsWaitlistSubmitted(false), 5000);
     } catch (error) {
       console.error('Error processing waitlist signup:', error);
       setSubmitError("There was an error submitting your request. Please try again.");
@@ -300,21 +300,25 @@ Total waitlist members: ${waitlistCount + 1}`
   );
 
   const WaitlistCounter = ({ count }) => (
-    <svg viewBox="0 0 200 40" className="h-8">
+    <svg viewBox="0 0 220 50" className="h-10">
       <defs>
         <linearGradient id="counterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#8B5CF6" />
           <stop offset="100%" stopColor="#EC4899" />
         </linearGradient>
+        <filter id="counterShadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#A855F7" />
+        </filter>
       </defs>
       <text
         x="50%"
         y="50%"
         dominantBaseline="middle"
         textAnchor="middle"
-        fontSize="28"
+        fontSize="32"
         fontFamily="monospace"
         fill="url(#counterGradient)"
+        filter="url(#counterShadow)"
       >
         {count}
       </text>
@@ -698,18 +702,7 @@ Total waitlist members: ${waitlistCount + 1}`
         
         <div className="relative z-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-fade-in">
-            {/* Waitlist Counter */}
-            {waitlistCount > 0 && (
-              <div className="mb-6">
-                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-4 py-2 border border-purple-400/30">
-                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  <WaitlistCounter count={waitlistCount} />
-                  <span className="text-white/90 text-sm font-medium ml-2">
-                    people have joined the waitlist
-                  </span>
-                </div>
-              </div>
-            )}
+
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
               Ever Wondered
@@ -953,6 +946,17 @@ Total waitlist members: ${waitlistCount + 1}`
           </p>
 
           <div className="max-w-md mx-auto">
+            {waitlistCount > 0 && (
+              <div className="mb-6">
+                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-4 py-2 border border-purple-400/30">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                  <WaitlistCounter count={waitlistCount} />
+                  <span className="text-white/90 text-sm font-medium ml-2">
+                    people have joined the waitlist
+                  </span>
+                </div>
+              </div>
+            )}
             {isWaitlistSubmitted ? (
               <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-lg border border-green-400/50 rounded-xl p-6">
                 <div className="text-3xl mb-4">✅</div>

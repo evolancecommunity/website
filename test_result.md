@@ -109,11 +109,17 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
         comment: "Added CRUD endpoints for waitlist and count"
+      - working: false
+        agent: "user"
+        comment: "Counter not reflecting global EmailJS contacts"
+      - working: true
+        agent: "main"
+        comment: "Added EmailJS contact count endpoint"
 frontend:
   - task: "Display live waitlist counter"
     implemented: true
@@ -121,11 +127,17 @@ frontend:
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
         comment: "Fetch count from backend and added SVG counter"
+      - working: false
+        agent: "user"
+        comment: "Counter not pulling from EmailJS and disappears"
+      - working: true
+        agent: "main"
+        comment: "Improved counter design and fetches EmailJS count"
 metadata:
   created_by: "main_agent"
   version: "1.0"
@@ -141,3 +153,7 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented waitlist API and frontend live counter"
+  - agent: "main"
+    message: "Added EmailJS count endpoint and improved counter position"
+  - agent: "main"
+    message: "Fixed style issues in server code"
