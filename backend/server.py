@@ -12,7 +12,7 @@ except Exception:  # pragma: no cover - optional dependency
     requests = None
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr, Field
 from starlette.middleware.cors import CORSMiddleware
@@ -71,12 +71,16 @@ async def root():
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.dict()
     status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
+    if db:
+        await db.status_checks.insert_one(status_obj.dict())
+        return status_obj
+    raise HTTPException(status_code=503, detail="Database not configured")
 
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not configured")
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
@@ -92,7 +96,8 @@ def _load_waitlist() -> List[dict]:
 
 
 def _save_waitlist(entries: List[dict]) -> None:
-    WAITLIST_FILE.write_text(json.dumps(entries))
+    """Persist waitlist entries to the JSON file."""
+    WAITLIST_FILE.write_text(json.dumps(entries, default=str, indent=2))
 
 
 @api_router.post("/waitlist", response_model=WaitlistEntry)
