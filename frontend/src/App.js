@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import emailjs from '@emailjs/browser';
-import axios from 'axios';
 import "./App.css";
 
 const App = () => {
@@ -15,7 +14,6 @@ const App = () => {
   const [activeAccordion, setActiveAccordion] = useState(null);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [waitlistCount, setWaitlistCount] = useState(0);
-  const [waitlistData, setWaitlistData] = useState([]);
 
   useEffect(() => {
     // Add smooth scroll behavior
@@ -24,40 +22,13 @@ const App = () => {
     // Initialize EmailJS
     emailjs.init("nZNy_SQwTWUNt2Tva");
 
-    // Fetch waitlist data for admin panel and emailjs count for counter
-    fetchWaitlistCount();
-    fetchWaitlistData();
-    const interval = setInterval(fetchWaitlistCount, 10000);
-    return () => clearInterval(interval);
+    // Update waitlist count
+    updateWaitlistCount();
   }, []);
 
-  const fetchWaitlistCount = async () => {
-    try {
-      const res = await axios.get('/api/emailjs/contacts/count');
-      if (res.data.count === 0) {
-        const local = await axios.get('/api/waitlist/count');
-        setWaitlistCount(local.data.count);
-      } else {
-        setWaitlistCount(res.data.count);
-      }
-    } catch (err) {
-      console.error('Failed to fetch waitlist count', err);
-      try {
-        const local = await axios.get('/api/waitlist/count');
-        setWaitlistCount(local.data.count);
-      } catch (err2) {
-        console.error('Failed to fetch local waitlist count', err2);
-      }
-    }
-  };
-
-  const fetchWaitlistData = async () => {
-    try {
-      const res = await axios.get('/api/waitlist');
-      setWaitlistData(res.data);
-    } catch (err) {
-      console.error('Failed to fetch waitlist data', err);
-    }
+  const updateWaitlistCount = () => {
+    const waitlistData = JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
+    setWaitlistCount(waitlistData.length);
   };
 
   const handleInputChange = (e) => {
@@ -79,15 +50,31 @@ const App = () => {
     setSubmitError("");
 
     try {
-      const now = new Date();
-      const entryData = {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email
+      // Store in local database (localStorage for now)
+      const waitlistData = {
+        id: Date.now(),
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        timestamp: new Date().toISOString(),
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString()
       };
 
-      // Send to backend
-      await axios.post('/api/waitlist', entryData);
+      // Get existing waitlist data
+      const existingData = JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
+      
+      // Check if email already exists
+      const emailExists = existingData.some(entry => entry.email === formData.email);
+      if (emailExists) {
+        setSubmitError("This email is already on our waitlist!");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Add new entry
+      existingData.push(waitlistData);
+      localStorage.setItem('evolanceWaitlist', JSON.stringify(existingData));
 
       // EmailJS service configuration
       const templateParams = {
@@ -96,16 +83,16 @@ const App = () => {
         from_email: formData.email,
         subject: `Requesting Waitlist ${formData.firstName} ${formData.lastName} ${formData.email}`,
         message: `New waitlist signup:
-
+        
 Name: ${formData.firstName} ${formData.lastName}
 Email: ${formData.email}
-Date: ${now.toLocaleDateString()}
-Time: ${now.toLocaleTimeString()}
-Timestamp: ${now.toISOString()}
+Date: ${waitlistData.date}
+Time: ${waitlistData.time}
+Timestamp: ${waitlistData.timestamp}
 
 This person has expressed interest in joining the Evolance waitlist and would like early access to the platform.
 
-Total waitlist members: ${waitlistCount + 1}`
+Total waitlist members: ${existingData.length}`
       };
 
       // Send email using EmailJS
@@ -115,14 +102,15 @@ Total waitlist members: ${waitlistCount + 1}`
         templateParams
       );
 
-      console.log("Waitlist signup successful:", entryData);
+      console.log("Waitlist signup successful:", waitlistData);
+      console.log("Total waitlist members:", existingData.length);
       
-      // Refresh waitlist data and count
-      await fetchWaitlistData();
-      await fetchWaitlistCount();
-
+      // Update waitlist count
+      updateWaitlistCount();
+      
       setIsWaitlistSubmitted(true);
       setFormData({ firstName: "", lastName: "", email: "" });
+      setTimeout(() => setIsWaitlistSubmitted(false), 5000);
     } catch (error) {
       console.error('Error processing waitlist signup:', error);
       setSubmitError("There was an error submitting your request. Please try again.");
@@ -140,26 +128,17 @@ Total waitlist members: ${waitlistCount + 1}`
   };
 
   const toggleAdminPanel = () => {
-    const newState = !showAdminPanel;
-    setShowAdminPanel(newState);
-    if (newState) {
-      fetchWaitlistData();
-    }
+    setShowAdminPanel(!showAdminPanel);
   };
 
   const getWaitlistData = () => {
-    return waitlistData;
+    return JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
   };
 
-  const clearWaitlist = async () => {
+  const clearWaitlist = () => {
     if (window.confirm('Are you sure you want to clear all waitlist data?')) {
-      try {
-        await axios.delete('/api/waitlist');
-        setWaitlistData([]);
-        setWaitlistCount(0);
-      } catch (err) {
-        console.error('Failed to clear waitlist', err);
-      }
+      localStorage.removeItem('evolanceWaitlist');
+      updateWaitlistCount();
     }
   };
 
@@ -307,32 +286,6 @@ Total waitlist members: ${waitlistCount + 1}`
           repeatCount="indefinite"
         />
       </circle>
-    </svg>
-  );
-
-  const WaitlistCounter = ({ count }) => (
-    <svg viewBox="0 0 220 50" className="h-10">
-      <defs>
-        <linearGradient id="counterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#8B5CF6" />
-          <stop offset="100%" stopColor="#EC4899" />
-        </linearGradient>
-        <filter id="counterShadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#A855F7" />
-        </filter>
-      </defs>
-      <text
-        x="50%"
-        y="50%"
-        dominantBaseline="middle"
-        textAnchor="middle"
-        fontSize="32"
-        fontFamily="monospace"
-        fill="url(#counterGradient)"
-        filter="url(#counterShadow)"
-      >
-        {count}
-      </text>
     </svg>
   );
 
@@ -653,7 +606,7 @@ Total waitlist members: ${waitlistCount + 1}`
                   <div className="grid md:grid-cols-4 gap-2 text-sm">
                     <div>
                       <span className="text-purple-300 font-semibold">#{index + 1}</span>
-                      <p className="text-white">{entry.first_name} {entry.last_name}</p>
+                      <p className="text-white">{entry.firstName} {entry.lastName}</p>
                     </div>
                     <div>
                       <p className="text-white/60">Email:</p>
@@ -661,11 +614,11 @@ Total waitlist members: ${waitlistCount + 1}`
                     </div>
                     <div>
                       <p className="text-white/60">Date:</p>
-                      <p className="text-white">{new Date(entry.timestamp).toLocaleDateString()}</p>
+                      <p className="text-white">{entry.date}</p>
                     </div>
                     <div>
                       <p className="text-white/60">Time:</p>
-                      <p className="text-white">{new Date(entry.timestamp).toLocaleTimeString()}</p>
+                      <p className="text-white">{entry.time}</p>
                     </div>
                   </div>
                 </div>
@@ -713,7 +666,17 @@ Total waitlist members: ${waitlistCount + 1}`
         
         <div className="relative z-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-fade-in">
-
+            {/* Waitlist Counter */}
+            {waitlistCount > 0 && (
+              <div className="mb-6">
+                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-4 py-2 border border-purple-400/30">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                  <span className="text-white/90 text-sm font-medium">
+                    {waitlistCount} people have joined the waitlist
+                  </span>
+                </div>
+              </div>
+            )}
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
               Ever Wondered
@@ -957,17 +920,6 @@ Total waitlist members: ${waitlistCount + 1}`
           </p>
 
           <div className="max-w-md mx-auto">
-            {waitlistCount > 0 && (
-              <div className="mb-6">
-                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-4 py-2 border border-purple-400/30">
-                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  <WaitlistCounter count={waitlistCount} />
-                  <span className="text-white/90 text-sm font-medium ml-2">
-                    people have joined the waitlist
-                  </span>
-                </div>
-              </div>
-            )}
             {isWaitlistSubmitted ? (
               <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-lg border border-green-400/50 rounded-xl p-6">
                 <div className="text-3xl mb-4">✅</div>
