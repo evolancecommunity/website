@@ -173,3 +173,7 @@ agent_communication:
     message: "Added local file fallback for waitlist and improved count fetching"
   - agent: "main"
     message: "Fixed waitlist JSON save bug and ensured counter visibility"
+  - agent: "main"
+    message: "Reverted prior cleanup to restore waitlist features"
+  - agent: "main"
+    message: "Added detailed logging and Heroku deployment guide"
