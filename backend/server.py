@@ -99,7 +99,8 @@ def _save_waitlist(entries: List[dict]) -> None:
 async def create_waitlist_entry(input: WaitlistEntryCreate):
     logger.info("Create waitlist entry: %s", input.dict())
     entry_obj = WaitlistEntry(**input.dict())
-    if db:
+    if db is not None:
+        
         await db.waitlist.insert_one(entry_obj.dict())
         logger.info("Saved to DB: %s", entry_obj.id)
     else:
