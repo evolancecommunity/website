@@ -162,3 +162,8 @@ app.include_router(api_router)
 async def shutdown_db_client():
     if client:
         client.close()
+
+
+@app.get("/")
+def root():
+    return {"message": "Backend is live!"}
