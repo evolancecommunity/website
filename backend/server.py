@@ -80,7 +80,7 @@ async def create_status_check(input: StatusCheckCreate):
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**s) for s in status_checks]
@@ -100,7 +100,7 @@ def _save_waitlist(entries: List[dict]) -> None:
 async def create_waitlist_entry(input: WaitlistEntryCreate):
     logger.info("Create waitlist entry: %s", input.dict())
     entry_obj = WaitlistEntry(**input.dict())
-    if db is not None:
+    if db is None:
         await db.waitlist.insert_one(entry_obj.dict())
         logger.info("Saved to DB: %s", entry_obj.id)
     else:
@@ -170,7 +170,7 @@ def root():
 
 # New startup check: create 'waitlist' collection if not present
 async def check_and_create_collections():
-    if not db:
+    if db is None:
         logger.error("No database connection found.")
         return
 
