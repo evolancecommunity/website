@@ -167,6 +167,16 @@ async def shutdown_db_client():
 @app.get("/")
 def root():
     return {"message": "Backend is live!"}
+@api_router.get("/db/ping")
+async def ping_database():
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not configured")
+    try:
+        collections = await db.list_collection_names()
+        return {"status": "connected", "collections": collections}
+    except Exception as e:
+        logger.error(f"MongoDB connection error: {e}")
+        raise HTTPException(status_code=500, detail="MongoDB connection failed")
 
 # New startup check: create 'waitlist' collection if not present
 async def check_and_create_collections():
