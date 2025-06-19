@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,24 +9,26 @@ from pydantic import BaseModel, Field
 from typing import List
 import uuid
 from datetime import datetime
+import json
+import requests
 
-
+# Setup
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+mongo_url = os.environ.get("MONGO_URL")
+client = AsyncIOMotorClient(mongo_url) if mongo_url else None
+db = client[os.environ["DB_NAME"]] if client else None
 
-# Create the main app without a prefix
+# Waitlist fallback file
+WAITLIST_FILE = ROOT_DIR / "waitlist.json"
+
+# App
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-
-# Define Models
+# Models
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
@@ -35,142 +37,22 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    logger.info("Root endpoint called")
-    return {"message": "Hello World"}
+class WaitlistEntry(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    logger.info("Create status check with input: %s", input.dict())
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    if db:
-        await db.status_checks.insert_one(status_obj.dict())
-        logger.info("Status check stored in DB: %s", status_obj.id)
-        return status_obj
-    logger.warning("Database not configured; status check not saved")
-    raise HTTPException(status_code=503, detail="Database not configured")
+class WaitlistEntryCreate(BaseModel):
+    name: str
+    email: str
 
+# Logging
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(level=log_level, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    logger.info("Fetch status checks")
-    if not db:
-        logger.warning("Database not configured; cannot fetch status checks")
-        raise HTTPException(status_code=503, detail="Database not configured")
-    status_checks = await db.status_checks.find().to_list(1000)
-    logger.info("Fetched %d status checks", len(status_checks))
-    return [StatusCheck(**status_check) for status_check in status_checks]
-
-
-# Waitlist endpoints
-def _load_waitlist() -> List[dict]:
-    logger.debug("Loading waitlist from %s", WAITLIST_FILE)
-    if WAITLIST_FILE.exists():
-        try:
-            data = json.loads(WAITLIST_FILE.read_text())
-            logger.debug("Loaded %d waitlist entries", len(data))
-            return data
-        except Exception as exc:
-            logger.error("Failed reading waitlist file: %s", exc)
-            return []
-    logger.debug("Waitlist file not found")
-    return []
-
-
-def _save_waitlist(entries: List[dict]) -> None:
-    """Persist waitlist entries to the JSON file."""
-    logger.debug("Saving %d waitlist entries to %s", len(entries), WAITLIST_FILE)
-    WAITLIST_FILE.write_text(json.dumps(entries, default=str, indent=2))
-
-
-@api_router.post("/waitlist", response_model=WaitlistEntry)
-async def create_waitlist_entry(input: WaitlistEntryCreate):
-    logger.info("Create waitlist entry: %s", input.dict())
-    entry_obj = WaitlistEntry(**input.dict())
-    if db:
-        await db.waitlist.insert_one(entry_obj.dict())
-        logger.info("Waitlist entry stored in DB: %s", entry_obj.id)
-    else:
-        data = _load_waitlist()
-        data.append(entry_obj.dict())
-        _save_waitlist(data)
-        logger.info("Waitlist entry saved locally: %s", entry_obj.id)
-    return entry_obj
-
-
-@api_router.get("/waitlist", response_model=List[WaitlistEntry])
-async def get_waitlist_entries():
-    logger.info("Fetch waitlist entries")
-    if db:
-        entries = await db.waitlist.find().to_list(1000)
-    else:
-        entries = _load_waitlist()
-    logger.info("Retrieved %d waitlist entries", len(entries))
-    return [WaitlistEntry(**entry) for entry in entries]
-
-
-@api_router.get("/waitlist/count")
-async def get_waitlist_count():
-    logger.info("Fetch waitlist count")
-    if db:
-        count = await db.waitlist.count_documents({})
-    else:
-        count = len(_load_waitlist())
-    logger.info("Waitlist count is %d", count)
-    return {"count": count}
-
-
-@api_router.get("/emailjs/contacts/count")
-async def get_emailjs_contacts_count():
-    """Return number of contacts stored in EmailJS."""
-    api_key = os.getenv("EMAILJS_API_KEY")
-    account_id = os.getenv("EMAILJS_ACCOUNT_ID")
-    if not api_key or not account_id:
-        logger.error("EmailJS credentials not configured")
-        return {"count": len(_load_waitlist())}
-
-    if requests is None:
-        logger.error("requests library not installed")
-        return {"count": len(_load_waitlist())}
-
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
-    url = f"https://api.emailjs.com/api/v1/accounts/{account_id}/contacts"
-    try:
-        logger.debug("Requesting EmailJS contacts count")
-        resp = requests.get(url, headers=headers, timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
-        count = len(data.get("contacts", []))
-        logger.info("EmailJS contacts count is %d", count)
-        return {"count": count}
-    except Exception as exc:
-        logger.error("Failed fetching EmailJS contacts: %s", exc)
-        return {"count": len(_load_waitlist())}
-
-
-@api_router.delete("/waitlist")
-async def clear_waitlist():
-    logger.info("Clear waitlist")
-    if db:
-        result = await db.waitlist.delete_many({})
-        deleted = result.deleted_count
-        logger.info("Deleted %d entries from DB", deleted)
-    else:
-        _save_waitlist([])
-        deleted = 0
-        logger.info("Local waitlist cleared")
-    return {"deleted": deleted}
-
-
-# Include the router in the main app
-app.include_router(api_router)
-
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -179,14 +61,104 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging with environment variable
-log_level = os.getenv("LOG_LEVEL", "INFO").upper()
-logging.basicConfig(
-    level=log_level,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
+# Routes
+@api_router.get("/")
+async def root():
+    logger.info("Root endpoint called")
+    return {"message": "Hello World"}
+
+@api_router.post("/status", response_model=StatusCheck)
+async def create_status_check(input: StatusCheckCreate):
+    logger.info("Create status check: %s", input.dict())
+    status_obj = StatusCheck(**input.dict())
+    if db:
+        await db.status_checks.insert_one(status_obj.dict())
+        logger.info("Saved to DB: %s", status_obj.id)
+        return status_obj
+    raise HTTPException(status_code=503, detail="Database not configured")
+
+@api_router.get("/status", response_model=List[StatusCheck])
+async def get_status_checks():
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not configured")
+    status_checks = await db.status_checks.find().to_list(1000)
+    return [StatusCheck(**s) for s in status_checks]
+
+def _load_waitlist() -> List[dict]:
+    if WAITLIST_FILE.exists():
+        try:
+            return json.loads(WAITLIST_FILE.read_text())
+        except Exception as exc:
+            logger.error("Error loading waitlist: %s", exc)
+    return []
+
+def _save_waitlist(entries: List[dict]) -> None:
+    WAITLIST_FILE.write_text(json.dumps(entries, default=str, indent=2))
+
+@api_router.post("/waitlist", response_model=WaitlistEntry)
+async def create_waitlist_entry(input: WaitlistEntryCreate):
+    logger.info("Create waitlist entry: %s", input.dict())
+    entry_obj = WaitlistEntry(**input.dict())
+    if db:
+        await db.waitlist.insert_one(entry_obj.dict())
+        logger.info("Saved to DB: %s", entry_obj.id)
+    else:
+        data = _load_waitlist()
+        data.append(entry_obj.dict())
+        _save_waitlist(data)
+    return entry_obj
+
+@api_router.get("/waitlist", response_model=List[WaitlistEntry])
+async def get_waitlist_entries():
+    if db:
+        entries = await db.waitlist.find().to_list(1000)
+    else:
+        entries = _load_waitlist()
+    return [WaitlistEntry(**e) for e in entries]
+
+@api_router.get("/waitlist/count")
+async def get_waitlist_count():
+    if db:
+        count = await db.waitlist.count_documents({})
+    else:
+        count = len(_load_waitlist())
+    return {"count": count}
+
+@api_router.get("/emailjs/contacts/count")
+async def get_emailjs_contacts_count():
+    api_key = os.getenv("EMAILJS_API_KEY")
+    account_id = os.getenv("EMAILJS_ACCOUNT_ID")
+
+    if not api_key or not account_id:
+        logger.error("EmailJS creds not found")
+        return {"count": len(_load_waitlist())}
+
+    try:
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        url = f"https://api.emailjs.com/api/v1/accounts/{account_id}/contacts"
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        return {"count": len(data.get("contacts", []))}
+    except Exception as exc:
+        logger.error("EmailJS contact fetch failed: %s", exc)
+        return {"count": len(_load_waitlist())}
+
+@api_router.delete("/waitlist")
+async def clear_waitlist():
+    if db:
+        result = await db.waitlist.delete_many({})
+        return {"deleted": result.deleted_count}
+    _save_waitlist([])
+    return {"deleted": 0}
+
+# Attach router
+app.include_router(api_router)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    if client:
+        client.close()
