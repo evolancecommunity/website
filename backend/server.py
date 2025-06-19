@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime
 import json
 import requests
+from pymongo.errors import CollectionInvalid
 
 # Setup
 ROOT_DIR = Path(__file__).parent
@@ -100,7 +101,6 @@ async def create_waitlist_entry(input: WaitlistEntryCreate):
     logger.info("Create waitlist entry: %s", input.dict())
     entry_obj = WaitlistEntry(**input.dict())
     if db is not None:
-        
         await db.waitlist.insert_one(entry_obj.dict())
         logger.info("Saved to DB: %s", entry_obj.id)
     else:
@@ -164,7 +164,37 @@ async def shutdown_db_client():
     if client:
         client.close()
 
-
 @app.get("/")
 def root():
     return {"message": "Backend is live!"}
+
+# New startup check: create 'waitlist' collection if not present
+async def check_and_create_collections():
+    if not db:
+        logger.error("No database connection found.")
+        return
+
+    existing_collections = await db.list_collection_names()
+    if "waitlist" not in existing_collections:
+        try:
+            await db.create_collection("waitlist", validator={
+                "$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["id", "name", "email", "created_at"],
+                    "properties": {
+                        "id": {"bsonType": "string"},
+                        "name": {"bsonType": "string"},
+                        "email": {"bsonType": "string"},
+                        "created_at": {"bsonType": "date"}
+                    }
+                }
+            })
+            logger.info("Created 'waitlist' collection with schema validation.")
+        except CollectionInvalid as e:
+            logger.warning(f"Collection creation failed: {e}")
+    else:
+        logger.info("'waitlist' collection already exists.")
+
+@app.on_event("startup")
+async def startup_db_check():
+    await check_and_create_collections()
