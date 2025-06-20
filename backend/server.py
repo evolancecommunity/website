@@ -20,7 +20,7 @@ load_dotenv(ROOT_DIR / '.env')
 # MongoDB connection
 mongo_url = os.environ.get("MONGO_URL")
 client = AsyncIOMotorClient(mongo_url) if mongo_url else None
-db = client[os.environ["DB_NAME"]] if client else None
+db = client[os.environ.get("DB_NAME", "waitlist")] if client else None
 
 # Waitlist fallback file
 WAITLIST_FILE = ROOT_DIR / "waitlist.json"
@@ -53,12 +53,20 @@ log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(level=log_level, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# CORS
+# CORS Configuration
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "*")
+if allowed_origins_str == "*":
+    allowed_origins = ["*"]
+else:
+    allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+
+logger.info(f"CORS allowed origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=allowed_origins,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -100,13 +108,22 @@ def _save_waitlist(entries: List[dict]) -> None:
 async def create_waitlist_entry(input: WaitlistEntryCreate):
     logger.info("Create waitlist entry: %s", input.dict())
     entry_obj = WaitlistEntry(**input.dict())
-    if db is None:
+    
+    # Check for duplicate email
+    if db:
+        existing = await db.waitlist.find_one({"email": input.email})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already exists in waitlist")
         await db.waitlist.insert_one(entry_obj.dict())
         logger.info("Saved to DB: %s", entry_obj.id)
     else:
         data = _load_waitlist()
+        # Check for duplicate email in local data
+        if any(entry["email"] == input.email for entry in data):
+            raise HTTPException(status_code=400, detail="Email already exists in waitlist")
         data.append(entry_obj.dict())
         _save_waitlist(data)
+        logger.info("Saved to local file: %s", entry_obj.id)
     return entry_obj
 
 @api_router.get("/waitlist", response_model=List[WaitlistEntry])
@@ -213,4 +230,6 @@ if __name__ == "__main__":
     import uvicorn
     import os
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("server:app", host="0.0.0.0", port=port, reload=False)
+    host = "0.0.0.0"  # Heroku requires binding to 0.0.0.0
+    logger.info(f"Starting server on {host}:{port}")
+    uvicorn.run("server:app", host=host, port=port, reload=False)
