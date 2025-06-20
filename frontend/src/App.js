@@ -101,6 +101,13 @@ Total waitlist members: ${existingData.length}`
         'template_zdw244t',
         templateParams
       );
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/waitlist`, {
+       method: "POST",
+       headers: { "Content-Type": "application/json",},
+       body: JSON.stringify({
+       name: `${formData.firstName} ${formData.lastName}`,
+      email: formData.email })
+      });
 
       console.log("Waitlist signup successful:", waitlistData);
       console.log("Total waitlist members:", existingData.length);
