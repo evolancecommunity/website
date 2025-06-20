@@ -26,10 +26,15 @@ const App = () => {
     updateWaitlistCount();
   }, []);
 
-  const updateWaitlistCount = () => {
-    const waitlistData = JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
-    setWaitlistCount(waitlistData.length);
-  };
+  const updateWaitlistCount = async () => {
+  try {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/waitlist`);
+    const data = await res.json();
+    setWaitlistCount(data.length);
+  } catch (err) {
+    console.error("Failed to fetch waitlist count:", err);
+  }
+};
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -62,19 +67,11 @@ const App = () => {
       };
 
       // Get existing waitlist data
-      const existingData = JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
-      
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/waitlist`);
+      const existingData = await res.json();
+
       // Check if email already exists
       const emailExists = existingData.some(entry => entry.email === formData.email);
-      if (emailExists) {
-        setSubmitError("This email is already on our waitlist!");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Add new entry
-      existingData.push(waitlistData);
-      localStorage.setItem('evolanceWaitlist', JSON.stringify(existingData));
 
       // EmailJS service configuration
       const templateParams = {
@@ -138,16 +135,17 @@ Total waitlist members: ${existingData.length}`
     setShowAdminPanel(!showAdminPanel);
   };
 
-  const getWaitlistData = () => {
-    return JSON.parse(localStorage.getItem('evolanceWaitlist') || '[]');
-  };
+  const getWaitlistData = async () => {
+  try {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/waitlist`);
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to fetch waitlist data:", err);
+    return [];
+  }
+};
 
-  const clearWaitlist = () => {
-    if (window.confirm('Are you sure you want to clear all waitlist data?')) {
-      localStorage.removeItem('evolanceWaitlist');
-      updateWaitlistCount();
-    }
-  };
 
   // SVG Components
   const InfinitySymbol = () => (
