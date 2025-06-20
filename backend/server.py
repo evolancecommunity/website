@@ -80,7 +80,7 @@ async def root():
 async def create_status_check(input: StatusCheckCreate):
     logger.info("Create status check: %s", input.dict())
     status_obj = StatusCheck(**input.dict())
-    if db:
+    if db is not None:
         await db.status_checks.insert_one(status_obj.dict())
         logger.info("Saved to DB: %s", status_obj.id)
         return status_obj
@@ -110,7 +110,7 @@ async def create_waitlist_entry(input: WaitlistEntryCreate):
     entry_obj = WaitlistEntry(**input.dict())
     
     # Check for duplicate email
-    if db:
+    if db is not None:
         existing = await db.waitlist.find_one({"email": input.email})
         if existing:
             raise HTTPException(status_code=400, detail="Email already exists in waitlist")
@@ -128,7 +128,7 @@ async def create_waitlist_entry(input: WaitlistEntryCreate):
 
 @api_router.get("/waitlist", response_model=List[WaitlistEntry])
 async def get_waitlist_entries():
-    if db:
+    if db is not None:
         entries = await db.waitlist.find().to_list(1000)
     else:
         entries = _load_waitlist()
@@ -136,7 +136,7 @@ async def get_waitlist_entries():
 
 @api_router.get("/waitlist/count")
 async def get_waitlist_count():
-    if db:
+    if db is not None:
         count = await db.waitlist.count_documents({})
     else:
         count = len(_load_waitlist())
@@ -167,7 +167,7 @@ async def get_emailjs_contacts_count():
 
 @api_router.delete("/waitlist")
 async def clear_waitlist():
-    if db:
+    if db is not None:
         result = await db.waitlist.delete_many({})
         return {"deleted": result.deleted_count}
     _save_waitlist([])
