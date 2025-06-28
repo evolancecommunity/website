@@ -1029,7 +1029,7 @@ Total waitlist members: ${existingData.length}`
             </div>
           </div>
           <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/60 text-sm">
-            <p>&copy; 2024 Evolance. All rights reserved. Evolving consciousness, one soul at a time.</p>
+            <p>&copy; 2025 Evolance. All rights reserved. Empowering People.</p>
           </div>
         </div>
       </footer>
