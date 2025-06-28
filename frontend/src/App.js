@@ -691,7 +691,7 @@ Total waitlist members: ${existingData.length}`
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Evolance isn’t just an app—it’s a mirror to your soul, guiding you to break free from expectations, rediscover who you truly are, and grow into the life you were meant to live.
+              Evolance isn’t just an app—it’s a mirror to your empowered self, guiding you to break free from expectations, rediscover who you truly are, and grow into the life you were meant to live.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -713,7 +713,7 @@ Total waitlist members: ${existingData.length}`
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-white text-sm">🧘</span>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Guided Core Questioning Sessions</h3>
+                <h3 className="text-base font-semibold text-white mb-2">Guided Core Medidative Questioning Sessions</h3>
                 <p className="text-white/70 text-sm">Get to know your Truth</p>
               </div>
               
@@ -742,10 +742,10 @@ Total waitlist members: ${existingData.length}`
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Unlock Your Spiritual Potential
+              Discover Your Real Potential
             </h2>
             <p className="text-lg text-white/70 max-w-3xl mx-auto">
-              Discover the tools and guidance needed to elevate your consciousness and transform your life
+              We have the tools and guidance you always needed to elevate your self-worth and transform your life
             </p>
           </div>
 
@@ -773,7 +773,7 @@ Total waitlist members: ${existingData.length}`
               <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-lg p-4">
                 <SacredGeometrySVG />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Visualize your Cosmic Presence</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Visualize your Decisions</h3>
               <p className="text-white/70 leading-relaxed">
                   The Deep Awareness feature enables you to go deep within yourself and be aware that you are yourself the reality. Evolance helps you grow beyond that aligning you with your purpose.              </p>
             </div>
@@ -797,10 +797,10 @@ Total waitlist members: ${existingData.length}`
 
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { step: "01", title: "Awakening", description: "We are partnering with spiritual mentors for you, so you could focus on your journey" },
-              { step: "02", title: "Video Lessons", description: "Learn from leading psychologists and spiritual mentors" },
-              { step: "03", title: "Integration", description: "Integrate your material life with spiritual life and be in Oneness" },
-              { step: "04", title: "Transcendence", description: "Achieve higher states of consciousness" }
+              { step: "01", title: "Meditaiton", description: "AI trained over Thousands of years of wisdom " },
+              { step: "02", title: "Healing", description: "You can heal yourself enabliung you to keep your story private to you." },
+              { step: "03", title: "Re-Build", description: "Re-build yourself with more power, self-esteem and self-worth." },
+              { step: "04", title: "Awakening", description: "We are partnering with spiritual mentors for you, so you could focus on your journey" }
             ].map((item, index) => (
               <div key={index} className="text-center group">
                 <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-white group-hover:scale-110 transition-transform duration-300">
