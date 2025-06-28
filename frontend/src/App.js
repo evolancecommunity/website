@@ -1006,7 +1006,7 @@ Total waitlist members: ${existingData.length}`
                 Evolance
               </div>
               <p className="text-white/70 mb-6 max-w-md text-sm">
-                Empowering consciousness evolution through the perfect blend of ancient wisdom and modern technology.
+                Empowering People through the perfect blend of ancient wisdom and modern technology.
               </p>
             </div>
             <div>
