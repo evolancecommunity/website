@@ -822,27 +822,27 @@ Total waitlist members: ${existingData.length}`
               Transformation Stories
             </h2>
             <p className="text-lg text-white/70 max-w-3xl mx-auto">
-              Real experiences from those who want to embrace their spiritual evolution
+              Real experiences from those who want to embrace their emotional well-being
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Sarah Chen",
+                name: "Mia",
                 role: "Meditation Teacher",
-                content: "Evolance opened doorways to consciousness I never knew existed. I can't wait to know what my real purpose of life is.",
+                content: "Evolance opened doorways to self empowerment which I never knew existed. I can't wait to improve my emotional health.",
                 initials: "SC"
               },
               {
-                name: "Marcus Rivera",
-                role: "Spiritual Seeker",
-                content: "I have used various technologies and guidances but have never gone beyond meditation. I want to really overcome my hardhips and know my true purpose and connect with my higher self.",
+                name: "Aice",
+                role: "MSBA Student at UC Irvine",
+                content: "I have used various technologies and guidances but have never gone beyond recorded meditation. I want to really come out of my problems graved inside me.",
                 initials: "MR"
               },
               {
-                name: "Luna Patel",
-                role: "Energy Healer",
+                name: "Julian",
+                role: "Principal Software Engineer",
                 content: "I have always believed that ancient wisdom was all about freedom and not being a part of a conservative society. I found Evolance is breaking the silence finally, and i waitlisted for it.",
                 initials: "LP"
               }
