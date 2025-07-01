@@ -788,19 +788,19 @@ Total waitlist members: ${existingData.length}`
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Your Consciousness Journey
+              How Your Growth Roadmap Looks
             </h2>
             <p className="text-lg text-white/80 max-w-3xl mx-auto">
-              Navigate through levels of awareness and unlock your true potential
+              Navigate through levels of self-building and unlock your true potential
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { step: "01", title: "Meditaiton", description: "AI trained over Thousands of years of wisdom " },
-              { step: "02", title: "Healing", description: "You can heal yourself enabling you to keep your story private to you." },
+              { step: "01", title: "Emotional Rssonance", description: "Your best friend, can't believe is AI? You will Know! " },
+              { step: "02", title: "Healing", description: "You can now self-heal enabling yourself to keep your story sacred to you." },
               { step: "03", title: "Re-Build", description: "Re-build yourself with more power, self-esteem and self-worth." },
-              { step: "04", title: "Awakening", description: "We are partnering with spiritual mentors for you, so you could focus on your journey" }
+              { step: "04", title: "Community", description: "We are partnering with psychology industry experts for you, so you could focus on your journey" }
             ].map((item, index) => (
               <div key={index} className="text-center group">
                 <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-white group-hover:scale-110 transition-transform duration-300">
