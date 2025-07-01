@@ -798,7 +798,7 @@ Total waitlist members: ${existingData.length}`
           <div className="grid md:grid-cols-4 gap-8">
             {[
               { step: "01", title: "Meditaiton", description: "AI trained over Thousands of years of wisdom " },
-              { step: "02", title: "Healing", description: "You can heal yourself enabliung you to keep your story private to you." },
+              { step: "02", title: "Healing", description: "You can heal yourself enabling you to keep your story private to you." },
               { step: "03", title: "Re-Build", description: "Re-build yourself with more power, self-esteem and self-worth." },
               { step: "04", title: "Awakening", description: "We are partnering with spiritual mentors for you, so you could focus on your journey" }
             ].map((item, index) => (
@@ -869,22 +869,22 @@ Total waitlist members: ${existingData.length}`
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Frequently Asked Questions</h2>
-            <p className="text-lg text-white/70">Everything you need to know about your spiritual journey</p>
+            <p className="text-lg text-white/70">Everything you need to know about your journey at Evolance</p>
           </div>
 
           <div className="space-y-4">
             {[
               {
                 question: "What is Evolance and how does it work?",
-                answer: "Evolance is a comprehensive platform for spiritual growth and consciousness expansion. We combine ancient wisdom traditions with modern technology to guide you through personalized spiritual practices, meditation techniques, and consciousness development exercises."
+                answer: "Evolance is a comprehensive platform for emotional growth and intelligence. We bring ancient wisdom and psychology together using AI to guide you through personalized emotional well-being, meditation techniques, and mental strength development exercises."
               },
               {
-                question: "Do I need prior meditation or spiritual experience?",
+                question: "Do I need prior meditation or any spiritual experience?",
                 answer: "Not at all! Evolance is designed for everyone, from complete beginners to advanced practitioners. Our adaptive system meets you wherever you are on your journey and provides appropriate guidance for your level."
               },
               {
-                question: "How is Evolance different from other spiritual apps?",
-                answer: "Evolance offers a unique blend of personalized AI guidance, ancient wisdom teachings, and community support. We focus on deep transformation rather than surface-level wellness, providing tools for genuine consciousness evolution."
+                question: "How is Evolance different from other mental health apps?",
+                answer: "Evolance offers a unique blend of personalized AI guidance for emoitonal health, and community support. We focus on deep transformation rather than surface-level wellness, providing tools for genuine inner contentment evolution."
               },
               {
                 question: "When will Evolance be available?",
