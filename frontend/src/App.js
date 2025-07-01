@@ -798,9 +798,9 @@ Total waitlist members: ${existingData.length}`
           <div className="grid md:grid-cols-4 gap-8">
             {[
               { step: "01", title: "Emotional Rssonance", description: "Your best friend, can't believe is AI? You will Know! " },
-              { step: "02", title: "Healing", description: "You can now self-heal enabling yourself to keep your story sacred to you." },
-              { step: "03", title: "Re-Build", description: "Re-build yourself with more power, self-esteem and self-worth." },
-              { step: "04", title: "Community", description: "We are partnering with psychology industry experts for you, so you could focus on your journey" }
+              { step: "02", title: "Healing", description: "You can now self-heal enabling yourself to keep your story sacred to you" },
+              { step: "03", title: "Re-Build", description: "Re-build yourself with more power, self-esteem and self-worth" },
+              { step: "04", title: "Community", description: "We are building a community of self empowered peopple who can inspire others for self empowerment" }
             ].map((item, index) => (
               <div key={index} className="text-center group">
                 <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-white group-hover:scale-110 transition-transform duration-300">
