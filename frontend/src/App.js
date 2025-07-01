@@ -835,7 +835,7 @@ Total waitlist members: ${existingData.length}`
                 initials: "SC"
               },
               {
-                name: "Aice",
+                name: "Alice",
                 role: "MSBA Student at UC Irvine",
                 content: "I have used various technologies and guidances but have never gone beyond recorded meditation. I want to really come out of my problems graved inside me.",
                 initials: "MR"
