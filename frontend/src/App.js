@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import emailjs from '@emailjs/browser';
 import "./App.css";
+import { useRef } from "react";
 
 const App = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ const App = () => {
   const [activeAccordion, setActiveAccordion] = useState(null);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [waitlistCount, setWaitlistCount] = useState(0);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     // Add smooth scroll behavior
@@ -25,6 +28,27 @@ const App = () => {
     // Update waitlist count
     updateWaitlistCount();
   }, []);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          if (currentScrollY > lastScrollY && currentScrollY > 40) {
+            setShowNavbar(false); // scrolling down
+          } else {
+            setShowNavbar(true); // scrolling up
+          }
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const updateWaitlistCount = async () => {
   try {
@@ -145,6 +169,25 @@ Total waitlist members: ${existingData.length}`
     return [];
   }
 };
+
+  const clearWaitlist = async () => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/waitlist/clear`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (res.ok) {
+        updateWaitlistCount();
+        console.log('Waitlist cleared successfully');
+      } else {
+        console.error('Failed to clear waitlist:', res.status);
+      }
+    } catch (err) {
+      console.error('Error clearing waitlist:', err);
+    }
+  };
 
 
   // SVG Components
@@ -568,6 +611,195 @@ Total waitlist members: ${existingData.length}`
     </svg>
   );
 
+  const SampleChart = () => (
+    <svg width="100%" height="100%" viewBox="0 0 200 80">
+      <rect x="0" y="0" width="200" height="80" rx="16" fill="url(#chartBg)" />
+      <defs>
+        <linearGradient id="chartBg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#EC4899" stopOpacity="0.15" />
+        </linearGradient>
+        <linearGradient id="chartLine" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#8B5CF6" />
+          <stop offset="100%" stopColor="#EC4899" />
+        </linearGradient>
+      </defs>
+      <polyline
+        fill="none"
+        stroke="url(#chartLine)"
+        strokeWidth="4"
+        strokeLinejoin="round"
+        points="10,70 40,50 70,60 100,30 130,40 160,20 190,35"
+      >
+        <animate attributeName="points" values="10,70 40,50 70,60 100,30 130,40 160,20 190,35;10,60 40,55 70,40 100,50 130,30 160,40 190,25;10,70 40,50 70,60 100,30 130,40 160,20 190,35" dur="4s" repeatCount="indefinite" />
+      </polyline>
+      <circle cx="100" cy="30" r="5" fill="#EC4899" opacity="0.7">
+        <animate attributeName="cy" values="30;50;30" dur="4s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  );
+
+  const ChatPreview = () => (
+    <div className="w-full h-full flex flex-col justify-end items-start p-2 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 rounded-lg">
+      {/* AI message */}
+      <div className="mb-2 flex items-end">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold mr-2 shadow-md">ev</div>
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-2xl text-xs max-w-[80%] shadow-lg animate-fade-in">
+          How are you feeling today?
+        </div>
+      </div>
+      {/* User message */}
+      <div className="mb-2 flex items-end justify-end self-end">
+        <div className="bg-white/10 text-white px-3 py-2 rounded-2xl text-xs max-w-[80%] shadow-lg animate-fade-in mr-2">
+          I feel a bit anxious about my new job.
+        </div>
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-xs font-bold shadow-md">U</div>
+      </div>
+      {/* AI supportive reply */}
+      <div className="flex items-end">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold mr-2 shadow-md">ev</div>
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-2xl text-xs max-w-[80%] shadow-lg animate-fade-in">
+          I totally get that! New jobs can be really overwhelming. What's making you feel most anxious about it?
+        </div>
+      </div>
+    </div>
+  );
+
+  const DecisionGraph = () => (
+  <svg width="100%" height="100%" viewBox="0 0 200 80">
+    <rect x="0" y="0" width="200" height="80" rx="16" fill="url(#decisionBg)" />
+    <defs>
+      <linearGradient id="decisionBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.12" />
+        <stop offset="100%" stopColor="#F472B6" stopOpacity="0.12" />
+      </linearGradient>
+      <linearGradient id="decisionLine" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#38BDF8" />
+        <stop offset="100%" stopColor="#F472B6" />
+      </linearGradient>
+      <linearGradient id="forecastLine" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#F472B6" />
+        <stop offset="100%" stopColor="#EC4899" />
+      </linearGradient>
+    </defs>
+    {/* Historical data */}
+    <path d="M20,60 Q60,20 100,40" fill="none" stroke="url(#decisionLine)" strokeWidth="3" strokeDasharray="5,5" />
+    {/* Current point */}
+    <circle cx="100" cy="40" r="4" fill="#38BDF8" />
+    {/* Forecast line */}
+    <path d="M100,40 Q140,25 180,15" fill="none" stroke="url(#forecastLine)" strokeWidth="4" strokeDasharray="8,4">
+      <animate attributeName="stroke-dashoffset" values="0;-12" dur="2s" repeatCount="indefinite" />
+    </path>
+    {/* Forecast ball */}
+    <circle cx="140" cy="25" r="6" fill="#F472B6" opacity="0.7">
+      <animate attributeName="cx" values="100;140;180" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" />
+      <animate attributeName="cy" values="40;25;15" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" />
+      <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <text x="50" y="25" fontSize="10" fill="#fff" opacity="0.6">Past</text>
+    <text x="100" y="35" fontSize="10" fill="#fff" opacity="0.8">Now</text>
+    <text x="150" y="10" fontSize="10" fill="#fff" opacity="0.6">Future</text>
+  </svg>
+);
+
+  const Fingerprint = () => (
+  <svg width="100%" height="100%" viewBox="0 0 80 80">
+    <defs>
+      <radialGradient id="fpBg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.2" />
+        <stop offset="100%" stopColor="#EC4899" stopOpacity="0.1" />
+      </radialGradient>
+      <linearGradient id="fpLine" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#8B5CF6" />
+        <stop offset="100%" stopColor="#EC4899" />
+      </linearGradient>
+    </defs>
+    <circle cx="40" cy="40" r="38" fill="url(#fpBg)">
+      <animate attributeName="r" values="38;42;38" dur="3s" repeatCount="indefinite" />
+    </circle>
+    <path d="M40,60 Q30,50 40,40 Q50,30 40,20" fill="none" stroke="url(#fpLine)" strokeWidth="3">
+      <animate attributeName="d" values="M40,60 Q30,50 40,40 Q50,30 40,20;M40,58 Q32,48 40,38 Q48,28 40,18;M40,60 Q30,50 40,40 Q50,30 40,20" dur="4s" repeatCount="indefinite" />
+    </path>
+    <path d="M40,65 Q20,45 40,25 Q60,5 40,15" fill="none" stroke="url(#fpLine)" strokeWidth="2" opacity="0.7">
+      <animate attributeName="d" values="M40,65 Q20,45 40,25 Q60,5 40,15;M40,63 Q22,43 40,23 Q58,3 40,13;M40,65 Q20,45 40,25 Q60,5 40,15" dur="4.5s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite" />
+    </path>
+    <path d="M40,70 Q10,40 40,10 Q70,-20 40,5" fill="none" stroke="url(#fpLine)" strokeWidth="1" opacity="0.5">
+      <animate attributeName="d" values="M40,70 Q10,40 40,10 Q70,-20 40,5;M40,68 Q12,38 40,8 Q68,-22 40,3;M40,70 Q10,40 40,10 Q70,-20 40,5" dur="5s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3.5s" repeatCount="indefinite" />
+    </path>
+  </svg>
+);
+
+  const PrivacyLock = () => (
+  <div className="w-full h-full flex items-center justify-center">
+    <div className="relative">
+      {/* Outer shield glow */}
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-lg animate-pulse"></div>
+      
+      {/* Main shield container */}
+      <div className="relative glass-effect-dark rounded-full p-6 flex items-center justify-center shadow-2xl border border-purple-400/30">
+        <svg width="50" height="50" viewBox="0 0 50 50">
+          <defs>
+            <radialGradient id="shieldGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#EC4899" stopOpacity="0.1" />
+            </radialGradient>
+            <linearGradient id="lockGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#8B5CF6" />
+              <stop offset="100%" stopColor="#EC4899" />
+            </linearGradient>
+          </defs>
+          
+          {/* Shield background */}
+          <ellipse cx="25" cy="25" rx="22" ry="22" fill="url(#shieldGradient)">
+            <animate attributeName="rx" values="22;24;22" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="ry" values="22;24;22" dur="3s" repeatCount="indefinite" />
+          </ellipse>
+          
+          {/* Shield border */}
+          <ellipse cx="25" cy="25" rx="22" ry="22" fill="none" stroke="url(#lockGradient)" strokeWidth="2" strokeOpacity="0.6">
+            <animate attributeName="strokeOpacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
+          </ellipse>
+          
+          {/* Lock body */}
+          <rect x="15" y="22" width="20" height="15" rx="6" fill="url(#lockGradient)" fillOpacity="0.8">
+            <animate attributeName="fillOpacity" values="0.8;1;0.8" dur="2.5s" repeatCount="indefinite" />
+          </rect>
+          
+          {/* Lock keyhole */}
+          <rect x="22" y="28" width="6" height="8" rx="3" fill="#fff" fillOpacity="0.9">
+            <animate attributeName="fillOpacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite" />
+          </rect>
+          <circle cx="25" cy="26" r="1.5" fill="#fff" fillOpacity="0.9">
+            <animate attributeName="r" values="1.5;2;1.5" dur="2s" repeatCount="indefinite" />
+          </circle>
+          
+          {/* Lock shackle */}
+          <rect x="18" y="12" width="14" height="12" rx="7" fill="none" stroke="url(#lockGradient)" strokeWidth="3" strokeOpacity="0.8">
+            <animate attributeName="strokeOpacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite" />
+          </rect>
+          
+          {/* Privacy dots */}
+          <circle cx="15" cy="15" r="1" fill="#10B981" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="35" cy="15" r="1" fill="#10B981" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="25" cy="8" r="1" fill="#10B981" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite" />
+          </circle>
+        </svg>
+      </div>
+      
+      {/* Floating security elements */}
+      <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-500/80 rounded-full animate-ping"></div>
+      <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-blue-500/80 rounded-full animate-pulse"></div>
+    </div>
+  </div>
+);
+
   return (
     <div className="App">
       {/* Admin Panel Toggle */}
@@ -640,18 +872,23 @@ Total waitlist members: ${existingData.length}`
       )}
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-30 bg-black/20 backdrop-blur-lg border-b border-white/10">
+      <nav
+        className={`fixed top-0 w-full z-30 bg-black/20 backdrop-blur-lg border-b border-white/10 
+          ${showNavbar ? 'navbar-show' : 'navbar-hide'}
+        `}
+        onMouseEnter={() => setShowNavbar(true)}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <a href="#" className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Evolance
-              </div>
+              </a>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-8">
                 <a href="#features" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Features</a>
-                <a href="#journey" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Journey</a>
+                <a href="#faq" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">FAQ</a>
                 <a href="#testimonials" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Stories</a>
                 <button 
                   onClick={scrollToWaitlist}
@@ -683,15 +920,15 @@ Total waitlist members: ${existingData.length}`
               </div>
             )}
 
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
-              Ever Wondered
-              <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-                Who You Really Are ?
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-loose text-white">
+              World's First AI Platform for
+              <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent pb-2">
+                Emotional Intelligence
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Evolance isn’t just an app—it’s a mirror to your empowered self, guiding you to break free from expectations, rediscover who you truly are, and grow into the life you were meant to live.
+              Evolance helps you achieve emotional clarity, make better decisions, and unlock your full potential through AI-powered emotional analytics and personalized guidance.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -702,35 +939,78 @@ Total waitlist members: ${existingData.length}`
                 Get Early Access
               </button>
               
-              <button className="text-white/80 hover:text-white px-8 py-3 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm text-base font-medium">
+              <a 
+                href="#features"
+                className="text-white/80 hover:text-white px-8 py-3 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm text-base font-medium cursor-pointer scroll-smooth"
+              >
                 Learn More
-              </button>
+              </a>
             </div>
 
             {/* Key Benefits */}
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-16">
               <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white text-sm">🧘</span>
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                  {/* Animated Bar Chart SVG */}
+                  <svg width="40" height="40" viewBox="0 0 40 40">
+                    <rect x="8" y="22" width="4" height="10" rx="2" fill="#a78bfa">
+                      <animate attributeName="height" values="10;16;10" dur="1.5s" repeatCount="indefinite" />
+                      <animate attributeName="y" values="22;16;22" dur="1.5s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="18" y="16" width="4" height="16" rx="2" fill="#f472b6">
+                      <animate attributeName="height" values="16;10;16" dur="1.5s" repeatCount="indefinite" />
+                      <animate attributeName="y" values="16;22;16" dur="1.5s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="28" y="10" width="4" height="22" rx="2" fill="#38bdf8">
+                      <animate attributeName="height" values="22;14;22" dur="1.5s" repeatCount="indefinite" />
+                      <animate attributeName="y" values="10;18;10" dur="1.5s" repeatCount="indefinite" />
+                    </rect>
+                  </svg>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Guided Core Medidative Questioning Sessions</h3>
-                <p className="text-white/70 text-sm">Get to know your Truth</p>
+                <h3 className="text-base font-semibold text-white mb-2">Emolytics Dashboard</h3>
+                <p className="text-white/70 text-sm">Visualize your emotional trends and patterns with interactive analytics.</p>
               </div>
               
               <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white text-sm">♾️</span>
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                  {/* Animated Chat Bubble SVG */}
+                  <svg width="40" height="40" viewBox="0 0 40 40">
+                    <ellipse cx="20" cy="20" rx="14" ry="10" fill="#a78bfa" fillOpacity="0.2">
+                      <animate attributeName="rx" values="14;16;14" dur="2s" repeatCount="indefinite" />
+                    </ellipse>
+                    <rect x="10" y="15" width="20" height="10" rx="5" fill="#f472b6" fillOpacity="0.7">
+                      <animate attributeName="width" values="20;24;20" dur="2s" repeatCount="indefinite" />
+                      <animate attributeName="x" values="10;8;10" dur="2s" repeatCount="indefinite" />
+                    </rect>
+                    <circle cx="16" cy="20" r="1.5" fill="#fff">
+                      <animate attributeName="r" values="1.5;2;1.5" dur="1.2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="20" cy="20" r="1.5" fill="#fff">
+                      <animate attributeName="r" values="1.5;2;1.5" dur="1.2s" begin="0.3s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="24" cy="20" r="1.5" fill="#fff">
+                      <animate attributeName="r" values="1.5;2;1.5" dur="1.2s" begin="0.6s" repeatCount="indefinite" />
+                    </circle>
+                  </svg>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Visualize Yourself Across Timelines</h3>
-                <p className="text-white/70 text-sm">Make better Decisions using Our Unique Stand-Alone feature visualizing yourself across your Past, Present and Future - Based on Your Real Story</p>
+                <h3 className="text-base font-semibold text-white mb-2">AI Companion</h3>
+                <p className="text-white/70 text-sm">Get 24/7 support and personalized guidance from your emotionally intelligent AI.</p>
               </div>
               
               <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white text-sm">⚡</span>
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                  {/* Animated Upward Arrow/Line Chart SVG */}
+                  <svg width="40" height="40" viewBox="0 0 40 40">
+                    <polyline points="8,28 18,18 26,24 32,12" fill="none" stroke="#38bdf8" strokeWidth="3" strokeLinejoin="round">
+                      <animate attributeName="points" values="8,28 18,18 26,24 32,12;8,28 18,20 26,16 32,8;8,28 18,18 26,24 32,12" dur="2s" repeatCount="indefinite" />
+                    </polyline>
+                    <circle cx="32" cy="12" r="2.5" fill="#f472b6">
+                      <animate attributeName="cy" values="12;8;12" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                  </svg>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Ancient Wisdom Meets Modern Technology</h3>
-                <p className="text-white/70 text-sm">Technology is no more limited to material life. Evolance is Proud to Prove it</p>
+                <h3 className="text-base font-semibold text-white mb-2">Decision Forecasting</h3>
+                <p className="text-white/70 text-sm">See how your choices could impact your emotional future with predictive insights.</p>
               </div>
             </div>
           </div>
@@ -742,77 +1022,69 @@ Total waitlist members: ${existingData.length}`
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Discover Your Real Potential
+              Unlock the Power of Emotional Intelligence
             </h2>
             <p className="text-lg text-white/70 max-w-3xl mx-auto">
-              We have the tools and guidance you always needed to elevate your self-worth and transform your life
+              Evolance gives you the tools to understand, track, and improve your emotional well-being using real-time analytics and AI-driven insights.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 rounded-lg p-4">
-                <MeditationSVG />
+              <div className="mb-4 h-40 flex items-center justify-center">
+                <SampleChart />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Emotionally Present Personal Bubble</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Emolytics Dashboard</h3>
               <p className="text-white/70 leading-relaxed">
-                Tell your whole story to the bubble and it will understand, empathize and help you feel heard. Each bubble session becomes a story and saved in your Evolance application.
+                Visualize your emotional trends, triggers, and patterns with interactive charts. Track your growth and gain clarity on your emotional journey.
               </p>
             </div>
 
             <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg p-4">
-                <ConsciousnessSVG />
+              <div className="mb-4 h-40 flex items-center justify-center">
+                <ChatPreview />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3"> Overcome and Appreciate</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">AI Companion</h3>
               <p className="text-white/70 leading-relaxed">
-                  Ever felt stuck with hardships or, are underappreciated and uncelebrated? Each story saved in your application generates an intelligent To-Do list with challenges to help you overcome hardships, appreciate and celebrate yourself.              </p>
+                Get 24/7 support from an emotionally intelligent AI. Receive personalized guidance, reflection prompts, and actionable insights tailored to your needs.
+              </p>
             </div>
 
             <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-lg p-4">
-                <SacredGeometrySVG />
+              <div className="mb-4 h-40 flex items-center justify-center">
+                <DecisionGraph />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Visualize your Decisions</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Decision Forecasting</h3>
               <p className="text-white/70 leading-relaxed">
-                  The Deep Awareness feature enables you to go deep within yourself and be aware that you are yourself the reality. Evolance helps you grow beyond that aligning you with your purpose.              </p>
+                Simulate how life decisions might impact your emotional trajectory. See predictive analytics and make confident, data-driven choices for your future.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mt-12">
+            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
+              <div className="mb-4 h-40 flex items-center justify-center">
+                <Fingerprint />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3">Emotional Fingerprint</h3>
+              <p className="text-white/70 leading-relaxed">
+                Discover your unique emotional identity. Evolance adapts to your patterns, helping you build self-mastery and track your authentic growth over time.
+              </p>
+            </div>
+            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
+              <div className="mb-4 h-40 flex items-center justify-center">
+                <PrivacyLock />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3">Privacy-First Design</h3>
+              <p className="text-white/70 leading-relaxed">
+                You can freely share the things you wouldn't even tell yourself or any therapist. Your data is secure and private, built with privacy at its core.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Journey Section */}
-      <section id="journey" className="py-20 relative overflow-hidden">
-        <JourneyBackground />
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              How Your Growth Roadmap Looks
-            </h2>
-            <p className="text-lg text-white/80 max-w-3xl mx-auto">
-              Navigate through levels of self-building and unlock your true potential
-            </p>
-          </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { step: "01", title: "Emotional Rssonance", description: "Your best friend, can't believe is AI? You will Know! " },
-              { step: "02", title: "Healing", description: "You can now self-heal enabling yourself to keep your story sacred to you" },
-              { step: "03", title: "Re-Build", description: "Re-build yourself with more power, self-esteem and self-worth" },
-              { step: "04", title: "Community", description: "We are building a community of self empowered peopple who can inspire others for self empowerment" }
-            ].map((item, index) => (
-              <div key={index} className="text-center group">
-                <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold text-white group-hover:scale-110 transition-transform duration-300">
-                  {item.step}
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-3">{item.title}</h3>
-                <p className="text-white/70 text-sm">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Testimonials Section */}
       <section id="testimonials" className="py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900">
@@ -826,7 +1098,7 @@ Total waitlist members: ${existingData.length}`
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 justify-items-center">
             {[
               {
                 name: "Mia",
@@ -845,9 +1117,36 @@ Total waitlist members: ${existingData.length}`
                 role: "Principal Software Engineer",
                 content: "I have always believed that ancient wisdom was all about freedom and not being a part of a conservative society. I found Evolance is breaking the silence finally, and i waitlisted for it.",
                 initials: "LP"
+              },
+              {
+                name: "Priya",
+                role: "Therapist",
+                content: "Evolance's AI insights helped me understand my emotional triggers and patterns in a way nothing else has.",
+                initials: "PR"
+              },
+              {
+                name: "Carlos",
+                role: "Startup Founder",
+                content: "The decision forecasting feature gave me clarity during a tough business pivot. Highly recommended!",
+                initials: "CA"
+              },
+              {
+                name: "Fatima",
+                role: "Artist",
+                content: "I love how Evolance respects privacy while providing deep, actionable emotional analytics.",
+                initials: "FA"
+              },
+              {
+                name: "Ethan",
+                role: "High School Student",
+                content: "The AI companion feels like a real friend who understands me. I feel more confident about my future.",
+                initials: "ET"
               }
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300">
+            ].map((testimonial, index, arr) => (
+              <div
+                key={index}
+                className={`bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 ${index === arr.length - 1 ? 'md:col-span-1 md:col-start-2' : ''}`}
+              >
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mr-3">
                     <span className="text-white font-semibold text-sm">{testimonial.initials}</span>
@@ -865,7 +1164,7 @@ Total waitlist members: ${existingData.length}`
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 to-purple-900">
+      <section id="faq" className="py-20 bg-gradient-to-br from-slate-900 to-purple-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Frequently Asked Questions</h2>
@@ -884,7 +1183,7 @@ Total waitlist members: ${existingData.length}`
               },
               {
                 question: "How is Evolance different from other mental health apps?",
-                answer: "Evolance offers a unique blend of personalized AI guidance for emoitonal health, and community support. We focus on deep transformation rather than surface-level wellness, providing tools for genuine inner contentment evolution."
+                answer: "Evolance offers a unique blend of personalized AI guidance for emotional health, and community support. We focus on deep transformation rather than surface-level wellness, providing tools for genuine inner contentment evolution. Our platform includes the Emolytics Dashboard for emotional tracking, AI Companion for 24/7 support, Decision Forecasting for life choices, Emotional Fingerprint for personal patterns, and Privacy-First Design for complete data security."
               },
               {
                 question: "When will Evolance be available?",
@@ -893,16 +1192,16 @@ Total waitlist members: ${existingData.length}`
             ].map((faq, index) => (
               <div key={index} className="bg-white/5 backdrop-blur-lg rounded-lg border border-white/10 overflow-hidden">
                 <button
-                  className="w-full px-6 py-4 text-left hover:bg-white/5 transition-colors duration-200 flex justify-between items-center"
+                  className="w-full px-6 py-4 text-left hover:bg-white/5 transition-colors duration-200 flex justify-between items-start"
                   onClick={() => toggleAccordion(index)}
                 >
-                  <h3 className="text-base font-semibold text-white pr-4">{faq.question}</h3>
-                  <span className={`text-purple-400 transform transition-transform duration-200 ${activeAccordion === index ? 'rotate-180' : ''}`}>
+                  <h3 className="text-base font-semibold text-white pr-4 flex-1 text-left leading-relaxed">{faq.question}</h3>
+                  <span className={`text-purple-400 transform transition-transform duration-200 flex-shrink-0 mt-1 ${activeAccordion === index ? 'rotate-180' : ''}`}>
                     ▼
                   </span>
                 </button>
                 {activeAccordion === index && (
-                  <div className="px-6 pb-4 text-white/70 leading-relaxed text-sm">
+                  <div className="px-6 pb-4 text-white/70 leading-relaxed text-sm border-t border-white/10 pt-4">
                     {faq.answer}
                   </div>
                 )}
@@ -918,7 +1217,7 @@ Total waitlist members: ${existingData.length}`
         
         <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-            Ready to Begin Your Journey?
+            Ready to Elevate Your Emotional Intelligence?
           </h2>
           <p className="text-lg text-white/80 mb-12">
             Join our waitlist to be among the first to experience Evolance and receive exclusive early access.
@@ -994,6 +1293,11 @@ Total waitlist members: ${existingData.length}`
               </form>
             )}
           </div>
+          <div className="mt-20 flex justify-center">
+            <span className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 border border-purple-400/30 text-base font-medium shadow-sm backdrop-blur-sm animated-gradient-text">
+              First 100 members get one month free access to our Pro Plan!
+            </span>
+          </div>
         </div>
       </section>
 
@@ -1006,7 +1310,7 @@ Total waitlist members: ${existingData.length}`
                 Evolance
               </div>
               <p className="text-white/70 mb-6 max-w-md text-sm">
-                Empowering People through the perfect blend of ancient wisdom, psychology and AI.
+                Unlock your emotional intelligence through AI-powered analytics, decision forecasting, and personalized emotional support.
               </p>
             </div>
             <div>
