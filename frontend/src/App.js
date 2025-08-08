@@ -881,8 +881,15 @@ Total waitlist members: ${existingData.length}`
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <a href="#" className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Evolance
+              <a href="#" className="flex items-center space-x-3">
+                <img 
+                  src="/logo.png" 
+                  alt="Evolance Logo" 
+                  className="h-8 w-8 object-contain"
+                />
+                <span className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  Evolance
+                </span>
               </a>
             </div>
             <div className="hidden md:block">
