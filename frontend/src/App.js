@@ -1687,12 +1687,12 @@ Total waitlist members: ${existingData.length}`
                       setMobileMenuOpen(false);
                     }}
                     className="block w-full text-left px-6 py-3 bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent hover:from-purple-300 hover:via-pink-300 hover:to-indigo-300 hover:bg-white/5 transition-all duration-300 text-base font-medium"
-                  >
-                    Join Waitlist
-                  </button>
-                </div>
+                >
+                  Join Waitlist
+                </button>
               </div>
             </div>
+          </div>
           )}
         </div>
       </nav>
@@ -1718,8 +1718,8 @@ Total waitlist members: ${existingData.length}`
                     animationFillMode: 'both'
                   }}
                 />
+                </div>
               </div>
-            </div>
 
             {/* Evolance Text */}
             <div className="mb-8 animate-fade-in" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
@@ -2087,8 +2087,8 @@ Total waitlist members: ${existingData.length}`
         {/* Logo watermark */}
         <div className="absolute bottom-1/4 left-1/4 w-40 h-40 opacity-5">
           <img src="/logo.png" alt="Evolance" className="w-full h-full object-contain filter brightness-0 invert" />
-        </div>
-        
+          </div>
+
         {/* Floating ethereal elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-16 right-16 w-72 h-72 rounded-full blur-3xl opacity-12" style={{
@@ -2111,40 +2111,53 @@ Total waitlist members: ${existingData.length}`
             <p className="text-lg text-white/80 leading-relaxed">Everything you need to know about your journey at Evolance</p>
           </div>
 
-          <div className="space-y-4">
+          {/* FAQ Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {[
               {
                 question: "What is Evolance and how does it work?",
-                answer: "Evolance is a comprehensive platform for emotional growth and intelligence. We bring ancient wisdom and psychology together using AI to guide you through personalized emotional well-being, meditation techniques, and mental strength development exercises."
+                answer: "Evolance is a comprehensive platform for emotional growth and intelligence. We bring ancient wisdom and psychology together using AI to guide you through personalized emotional well-being, meditation techniques, and mental strength development exercises.",
+                icon: "🧠"
               },
               {
                 question: "Do I need prior meditation or any spiritual experience?",
-                answer: "Not at all! Evolance is designed for everyone, from complete beginners to advanced practitioners. Our adaptive system meets you wherever you are on your journey and provides appropriate guidance for your level."
+                answer: "Not at all! Evolance is designed for everyone, from complete beginners to advanced practitioners. Our adaptive system meets you wherever you are on your journey and provides appropriate guidance for your level.",
+                icon: "🌱"
               },
               {
                 question: "How is Evolance different from other mental health apps?",
-                answer: "Evolance offers a unique blend of personalized AI guidance for emotional health, and community support. We focus on deep transformation rather than surface-level wellness, providing tools for genuine inner contentment evolution. Our platform includes the Emolytics Dashboard for emotional tracking, AI Companion for 24/7 support, Reflective Insights for life choices, Emotional Fingerprint for personal patterns, and Privacy-First Design for complete data security."
+                answer: "Evolance offers a unique blend of personalized AI guidance for emotional health, and community support. We focus on deep transformation rather than surface-level wellness, providing tools for genuine inner contentment evolution.",
+                icon: "✨"
               },
               {
                 question: "When will Evolance be available?",
-                answer: "We're currently in development and accepting early access members to our waitlist. Waitlist members will receive exclusive early access, special pricing, and the opportunity to shape the platform's development."
+                answer: "We're currently in development and accepting early access members to our waitlist. Waitlist members will receive exclusive early access, special pricing, and the opportunity to shape the platform's development.",
+                icon: "🚀"
               }
             ].map((faq, index) => (
-              <div key={index} className="bg-white/5 backdrop-blur-lg rounded-lg border border-white/10 overflow-hidden">
-                <button
-                  className="w-full px-6 py-4 text-left hover:bg-white/5 transition-colors duration-200 flex justify-between items-start"
-                  onClick={() => toggleAccordion(index)}
-                >
-                  <h3 className="text-base font-semibold text-white pr-4 flex-1 text-left leading-relaxed">{faq.question}</h3>
-                  <span className={`text-purple-400 transform transition-transform duration-200 flex-shrink-0 mt-1 ${activeAccordion === index ? 'rotate-180' : ''}`}>
-                    ▼
-                  </span>
-                </button>
-                {activeAccordion === index && (
-                  <div className="px-6 pb-4 text-white/70 leading-relaxed text-sm border-t border-white/10 pt-4">
+              <div 
+                key={index} 
+                className="group bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:border-purple-400/40 transition-all duration-500 hover:scale-105 hover:bg-white/15 shadow-lg hover:shadow-2xl"
+              >
+                {/* Icon and Question */}
+                <div className="flex items-start space-x-4 mb-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                    {faq.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-white mb-3 group-hover:text-purple-200 transition-colors duration-300 leading-tight">
+                      {faq.question}
+                    </h3>
+                  </div>
+                </div>
+                
+                {/* Answer */}
+                <div className="text-white/80 leading-relaxed text-sm group-hover:text-white/90 transition-colors duration-300">
                     {faq.answer}
                   </div>
-                )}
+                
+                {/* Decorative accent */}
+                <div className="mt-4 h-1 w-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
               </div>
             ))}
           </div>
@@ -2387,6 +2400,23 @@ Total waitlist members: ${existingData.length}`
               <p className="text-white/70 mb-6 max-w-md text-sm">
                 Unlock your emotional intelligence through AI-powered analytics, reflective insights, and personalized emotional support.
               </p>
+              {/* Social Media Links */}
+              <div className="flex space-x-4">
+                <a 
+                  href="https://www.linkedin.com/company/theempoweredcommunity/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group bg-white/5 backdrop-blur-sm rounded-full p-3 border border-white/10 hover:border-blue-400/40 hover:bg-blue-500/10 transition-all duration-300"
+                >
+                  <svg 
+                    className="w-5 h-5 text-white/70 group-hover:text-blue-400 transition-colors duration-300" 
+                    fill="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Platform</h4>
