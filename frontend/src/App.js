@@ -382,7 +382,31 @@ const EmolyticsDemoComponent = () => {
           <div className="w-full max-w-full flex flex-col md:flex-row items-center gap-4 sm:gap-6 lg:gap-8 xl:gap-12 px-2 sm:px-4">
             <div className="flex flex-col items-center md:items-start text-center md:text-left order-1 md:order-2">
               <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4 animate-fade-in-up drop-shadow-glow" style={{color: '#87CEEB'}}>how was your day?</h3>
-              <p className="text-xs sm:text-sm lg:text-base text-white/80 max-w-xs">Reflect and grow with ambient mood settings</p>
+              <p className="text-xs sm:text-sm lg:text-base text-white/80 max-w-xs mb-3 sm:mb-4">Reflect and grow with ambient mood journaling integrating with your favorite music streaming platform</p>
+              
+              {/* Music Streaming Platform Icons */}
+              <div className="flex items-center gap-3 sm:gap-4">
+                {/* Spotify */}
+                <div className="group flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-green-500/10 rounded-full border border-green-500/20 hover:bg-green-500/20 transition-all duration-300">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 group-hover:text-green-300 transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.599 0-.36.24-.66.54-.78 4.56-1.021 8.52-.6 11.64 1.32.36.18.479.659.242 1.019zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.32 11.28-1.08 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/>
+                  </svg>
+                </div>
+                
+                {/* Apple Music */}
+                <div className="group flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-pink-500/10 to-orange-500/10 rounded-full border border-pink-500/20 hover:from-pink-500/20 hover:to-orange-500/20 transition-all duration-300">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 group-hover:text-pink-300 transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.997 6.124c0-.738-.065-1.47-.24-2.19-.317-1.31-1.062-2.31-2.18-3.043C21.003.517 20.373.285 19.7.164c-.517-.093-1.038-.135-1.564-.15-.04-.001-.08-.004-.12-.004L6.704 0H6.68c-.52.015-1.041.057-1.557.15-.674.12-1.304.353-1.88.726-1.118.734-1.863 1.734-2.18 3.043C.888 4.655.823 5.386.823 6.124v11.741c0 .747.065 1.478.24 2.197.317 1.31 1.062 2.31 2.18 3.043.576.373 1.206.606 1.88.726.516.094 1.037.136 1.557.15.026 0 .051.004.076.004h11.207c.52-.015 1.041-.057 1.557-.15.674-.12 1.304-.353 1.88-.726 1.118-.734 1.863-1.734 2.18-3.043.175-.72.24-1.45.24-2.197V6.124h-.003zm-11.455 6.778c-.24 4.283-2.99 5.66-5.305 4.783-1.815-.69-1.702-3.146-.632-4.634 1.0701-1.488 3.216-1.653 4.48-1.073.15-.646.15-1.31.15-1.97 0-3.599.011-7.199-.011-10.798-.002-.437.013-.437.436-.372 1.071.164 2.15.287 3.218.46.317.051.317.051.317.385v7.7c-.001 1.839-.001 3.677-.001 5.516-.001.001-.001.002-.001.003z"/>
+                  </svg>
+                </div>
+                
+                {/* YouTube Music */}
+                <div className="group flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-red-500/10 rounded-full border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 group-hover:text-red-300 transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.568 17.568c-1.29 1.29-3.096 2.088-5.088 2.088s-3.798-.798-5.088-2.088c-1.29-1.29-2.088-3.096-2.088-5.088s.798-3.798 2.088-5.088c1.29-1.29 3.096-2.088 5.088-2.088s3.798.798 5.088 2.088c1.29 1.29 2.088 3.096 2.088 5.088s-.798 3.798-2.088 5.088zM9.12 8.064v7.872L15.84 12 9.12 8.064z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
             
             <div className="flex-[4] order-2 md:order-1">
