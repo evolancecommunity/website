@@ -1642,72 +1642,7 @@ Total waitlist members: ${existingData.length}`
         <div className="relative z-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Centered Logo Animation */}
           <div className="flex flex-col items-center justify-center min-h-[80vh]">
-            {/* Enhanced Waitlist Counter */}
-            {waitlistCount > 0 && (
-              <div className="mb-12 animate-fade-in" style={{ animationDelay: '3s', animationFillMode: 'both' }}>
-                <div className="relative group">
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 via-green-400/20 to-teal-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                  
-                  {/* Main card */}
-                  <div className="relative bg-gradient-to-br from-white/15 via-emerald-500/10 to-green-500/10 backdrop-blur-xl rounded-2xl px-8 py-4 border border-emerald-400/30 shadow-2xl transform group-hover:scale-105 transition-all duration-500">
-                    <div className="flex items-center justify-center space-x-4">
-                      {/* Animated indicator */}
-                      <div className="flex items-center space-x-2">
-                        <div className="relative">
-                          <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
-                          <div className="absolute inset-0 w-3 h-3 bg-emerald-400 rounded-full animate-ping opacity-20"></div>
-                        </div>
-                        <span className="text-emerald-300 text-sm font-medium">LIVE</span>
-                      </div>
-                      
-                      {/* Counter with enhanced styling */}
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-green-400 rounded-full flex items-center justify-center shadow-lg">
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM9 9a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                          </div>
-                          <div>
-                            <div className="flex items-baseline space-x-1">
-                              <span className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
-                                {waitlistCount}
-                              </span>
-                              <span className="text-white/90 text-base font-medium">
-                                early adopters
-                  </span>
-                            </div>
-                            <p className="text-emerald-300/80 text-xs font-medium">
-                              joined the waitlist today
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* Trending indicator */}
-                        <div className="flex items-center space-x-1 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-full px-3 py-1 border border-emerald-400/20">
-                          <svg className="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                          </svg>
-                          <span className="text-emerald-300 text-xs font-semibold">Trending</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Subtle progress indicator */}
-                    <div className="mt-3 w-full bg-white/10 rounded-full h-1">
-                      <div 
-                        className="bg-gradient-to-r from-emerald-400 to-green-400 h-1 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${Math.min((waitlistCount / 1000) * 100, 100)}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-white/50 text-xs text-center mt-1">
-                      {waitlistCount < 1000 ? `${1000 - waitlistCount} spots until next milestone` : 'Milestone reached! 🎉'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+            
 
             {/* Animated Logo */}
             <div className="mb-8 transform transition-all duration-1000 animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>
