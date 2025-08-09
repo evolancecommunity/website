@@ -553,6 +553,7 @@ const App = () => {
   const [waitlistCount, setWaitlistCount] = useState(0);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Add smooth scroll behavior
@@ -585,6 +586,18 @@ const App = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileMenuOpen && !event.target.closest('nav')) {
+        setMobileMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [mobileMenuOpen]);
 
   const updateWaitlistCount = async () => {
   try {
@@ -1625,13 +1638,62 @@ Total waitlist members: ${existingData.length}`
 
             {/* Mobile Menu Button */}
             <div className="md:hidden">
-              <button className="text-white/70 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white/70 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300"
+              >
+                {mobileMenuOpen ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
+          
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-2 mx-4">
+              <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
+                <div className="py-4 space-y-2">
+                  <a 
+                    href="#features" 
+                    className="block px-6 py-3 text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Features
+                  </a>
+                  <a 
+                    href="#testimonials" 
+                    className="block px-6 py-3 text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Stories
+                  </a>
+                  <a 
+                    href="#faq" 
+                    className="block px-6 py-3 text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    FAQ
+                  </a>
+                  <button 
+                    onClick={() => {
+                      scrollToWaitlist();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-6 py-3 bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent hover:from-purple-300 hover:via-pink-300 hover:to-indigo-300 hover:bg-white/5 transition-all duration-300 text-base font-medium"
+                  >
+                    Join Waitlist
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
