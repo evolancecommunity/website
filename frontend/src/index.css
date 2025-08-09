@@ -2,6 +2,246 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Music Animation */
+@keyframes musicWave {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.music-bar {
+  animation: musicWave 1s ease-in-out infinite;
+}
+
+/* Mobile-Specific Improvements */
+@layer utilities {
+  /* Safe area handling for notched devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Mobile touch improvements */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Mobile scroll improvements */
+  .mobile-scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Mobile text size adjustments */
+  .mobile-text-responsive {
+    font-size: clamp(0.875rem, 2.5vw, 1.125rem);
+  }
+  
+  .mobile-heading-responsive {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  
+  /* Mobile spacing improvements */
+  .mobile-padding-responsive {
+    padding: clamp(1rem, 4vw, 2rem);
+  }
+  
+  .mobile-margin-responsive {
+    margin: clamp(1rem, 4vw, 2rem);
+  }
+  
+  /* Mobile card improvements */
+  .mobile-card {
+    @apply rounded-xl p-4 sm:p-6;
+    min-height: 120px;
+  }
+  
+  /* Mobile button improvements */
+  .mobile-button {
+    @apply min-h-[44px] px-4 py-3 text-base font-medium;
+    touch-action: manipulation;
+  }
+  
+  /* Mobile grid improvements */
+  .mobile-grid-responsive {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  
+  /* Mobile chart container */
+  .mobile-chart-container {
+    @apply overflow-x-auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Mobile modal improvements */
+  .mobile-modal {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Mobile navigation improvements */
+  .mobile-nav-item {
+    @apply block w-full text-left px-4 py-3 text-base;
+    min-height: 44px;
+  }
+  
+  /* Mobile form improvements */
+  .mobile-input {
+    @apply w-full px-4 py-3 text-base border rounded-lg;
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Mobile animation optimizations */
+  .mobile-animate-safe {
+    will-change: transform, opacity;
+  }
+  
+  /* Mobile performance optimizations */
+  .mobile-gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  
+  /* Mobile typography improvements */
+  .mobile-leading-relaxed {
+    line-height: 1.6;
+  }
+  
+  /* Mobile spacing system */
+  .mobile-space-xs { @apply space-y-2; }
+  .mobile-space-sm { @apply space-y-3; }
+  .mobile-space-md { @apply space-y-4; }
+  .mobile-space-lg { @apply space-y-6; }
+  .mobile-space-xl { @apply space-y-8; }
+  
+  /* Mobile responsive containers */
+  .mobile-container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Mobile responsive text */
+  .mobile-text-xs { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+  .mobile-text-sm { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+  .mobile-text-base { font-size: clamp(1rem, 3vw, 1.125rem); }
+  .mobile-text-lg { font-size: clamp(1.125rem, 3.5vw, 1.25rem); }
+  .mobile-text-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); }
+  .mobile-text-2xl { font-size: clamp(1.5rem, 5vw, 1.875rem); }
+  .mobile-text-3xl { font-size: clamp(1.875rem, 6vw, 2.25rem); }
+  .mobile-text-4xl { font-size: clamp(2.25rem, 7vw, 3rem); }
+  .mobile-text-5xl { font-size: clamp(3rem, 8vw, 4rem); }
+}
+
+/* Mobile-specific media queries */
+@media (max-width: 640px) {
+  /* Reduce animations on mobile for better performance */
+  .mobile-reduce-motion {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Improve touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile-specific spacing */
+  .mobile-section-padding {
+    padding: 2rem 1rem;
+  }
+  
+  /* Mobile chart responsiveness */
+  .mobile-chart {
+    width: 100%;
+    height: 300px;
+    overflow-x: auto;
+  }
+  
+  /* Mobile card improvements */
+  .mobile-card-compact {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Mobile button improvements */
+  .mobile-button-full {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Mobile text improvements */
+  .mobile-text-center {
+    text-align: center;
+  }
+  
+  /* Mobile grid improvements */
+  .mobile-grid-single {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Mobile navigation improvements */
+  .mobile-nav-compact {
+    padding: 0.5rem;
+  }
+  
+  /* Mobile form improvements */
+  .mobile-form-compact {
+    gap: 1rem;
+  }
+  
+  /* Mobile modal improvements */
+  .mobile-modal-compact {
+    padding: 1rem;
+  }
+}
+
+/* Tablet-specific improvements */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tablet-text-responsive {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+  }
+}
+
+/* High-DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .retina-optimized {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) {
+  .mobile-dark-mode {
+    background-color: #1D2224;
+    color: #ffffff;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-reduce-motion {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",

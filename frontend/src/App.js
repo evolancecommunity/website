@@ -1,7 +1,543 @@
 import React, { useState, useEffect } from "react";
 import emailjs from '@emailjs/browser';
 import "./App.css";
+import "./EmolyticsAnimations.css";
 import { useRef } from "react";
+import { BarChart3, Brain, MessageCircle, Check, X, Pen } from 'lucide-react';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush
+} from 'recharts';
+
+// Avatar component for user representation
+const UserAvatar = ({ size = 32, className = "" }) => (
+  <div 
+    className={`rounded-2xl overflow-hidden ${className}`}
+    style={{ 
+      width: size, 
+      height: size
+    }}
+  >
+    <img 
+      src="/avatar.png" 
+      alt="User Avatar" 
+      className="w-full h-full object-cover"
+      onError={(e) => {
+        // Fallback to simple "U" if image fails to load
+        e.target.style.display = 'none';
+        e.target.parentElement.style.display = 'flex';
+        e.target.parentElement.style.alignItems = 'center';
+        e.target.parentElement.style.justifyContent = 'center';
+        e.target.parentElement.style.fontSize = size * 0.4 + 'px';
+        e.target.parentElement.style.fontWeight = 'bold';
+        e.target.parentElement.style.color = '#ffffff80';
+        e.target.parentElement.innerHTML = 'U';
+      }}
+    />
+  </div>
+);
+
+// Ev Icon component
+const EvIcon = ({ size = 32 }) => (
+  <div 
+    className="rounded-full flex items-center justify-center text-white font-bold shadow-lg"
+    style={{ 
+      width: size, 
+      height: size, 
+      background: '#2A7B9B',
+      fontSize: size * 0.4 
+    }}
+  >
+    ev
+  </div>
+);
+
+// Emotion data for charts
+const emotionData = {
+  Joy: [
+    { date: 'Jun 24', intensity: 60, trigger: 'Morning walk', reasoning: 'Fresh air boosted mood' },
+    { date: 'Jun 26', intensity: 70, trigger: 'Team lunch', reasoning: 'Positive social interaction' },
+    { date: 'Jun 28', intensity: 50, trigger: 'Work deadline', reasoning: 'Mild stress reduced joy' },
+    { date: 'Jul 1', intensity: 80, trigger: 'Job offer', reasoning: 'Excitement about new opportunity' },
+    { date: 'Jul 3', intensity: 90, trigger: 'Family call', reasoning: 'Supportive conversation' },
+    { date: 'Jul 5', intensity: 75, trigger: 'Gym session', reasoning: 'Physical activity uplifted mood' },
+    { date: 'Jul 7', intensity: 85, trigger: 'Weekend trip', reasoning: 'Relaxation and fun' }
+  ],
+  Sadness: [
+    { date: 'Jun 24', intensity: 40, trigger: 'Rainy weather', reasoning: 'Gloomy day affected mood' },
+    { date: 'Jun 26', intensity: 35, trigger: 'Missed call', reasoning: 'Felt disconnected' },
+    { date: 'Jun 28', intensity: 50, trigger: 'Work stress', reasoning: 'Overwhelmed by tasks' },
+    { date: 'Jul 1', intensity: 30, trigger: 'Job offer', reasoning: 'Hopeful for change' },
+    { date: 'Jul 3', intensity: 20, trigger: 'Family call', reasoning: 'Reassurance from loved ones' },
+    { date: 'Jul 5', intensity: 25, trigger: 'Gym session', reasoning: 'Endorphins helped' },
+    { date: 'Jul 7', intensity: 15, trigger: 'Weekend trip', reasoning: 'Distraction from worries' }
+  ],
+  Anger: [
+    { date: 'Jun 24', intensity: 30, trigger: 'Traffic jam', reasoning: 'Frustration with commute' },
+    { date: 'Jun 26', intensity: 45, trigger: 'Work conflict', reasoning: 'Disagreement with colleague' },
+    { date: 'Jun 28', intensity: 20, trigger: 'Missed appointment', reasoning: 'Disappointment in self' },
+    { date: 'Jul 1', intensity: 25, trigger: 'Job offer', reasoning: 'Hopeful for change' },
+    { date: 'Jul 3', intensity: 35, trigger: 'Family call', reasoning: 'Supportive conversation' },
+    { date: 'Jul 5', intensity: 30, trigger: 'Gym session', reasoning: 'Physical activity uplifted mood' },
+    { date: 'Jul 7', intensity: 40, trigger: 'Weekend trip', reasoning: 'Relaxation and fun' }
+  ],
+  Fear: [
+    { date: 'Jun 24', intensity: 50, trigger: 'Dark room', reasoning: 'Fear of the unknown' },
+    { date: 'Jun 26', intensity: 40, trigger: 'Missed call', reasoning: 'Felt disconnected' },
+    { date: 'Jun 28', intensity: 30, trigger: 'Work deadline', reasoning: 'Mild stress reduced joy' },
+    { date: 'Jul 1', intensity: 20, trigger: 'Job offer', reasoning: 'Hopeful for change' },
+    { date: 'Jul 3', intensity: 25, trigger: 'Family call', reasoning: 'Reassurance from loved ones' },
+    { date: 'Jul 5', intensity: 15, trigger: 'Gym session', reasoning: 'Endorphins helped' },
+    { date: 'Jul 7', intensity: 20, trigger: 'Weekend trip', reasoning: 'Distraction from worries' }
+  ]
+};
+
+const emotionColors = {
+  Joy: '#facc15',
+  Sadness: '#3b82f6',
+  Anger: '#ef4444',
+  Fear: '#a21caf',
+  Surprise: '#06b6d4',
+  Disgust: '#22c55e',
+};
+
+// Custom Tooltip for emotion analytics
+const EmolyticsTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const d = payload[0].payload;
+    return (
+      <div className="relative min-w-[240px] max-w-xs px-0 py-0">
+        <div className="text-white rounded-2xl px-6 py-5 shadow-xl font-medium relative animate-fade-in-up" style={{backgroundColor: '#2A7B9B'}}>
+          <div className="absolute -top-6 left-4 flex items-center">
+            <EvIcon size={36} />
+          </div>
+          <span className="absolute left-8 -bottom-4 w-6 h-6 rotate-45 rounded-sm" style={{clipPath:'polygon(0 0, 100% 0, 100% 100%)', backgroundColor: '#2A7B9B'}}></span>
+          <div className="mb-2 mt-2 text-base font-semibold">Here's what I see in your Emolytics for <span style={{color: '#B0E0E6', fontWeight: 'bold'}}>{label?.toString()}</span>:</div>
+          <div className="mb-1"><span style={{fontWeight: 'bold', color: '#B0E0E6'}}>Trigger:</span> {d.trigger || '—'}</div>
+          <div className="mb-1"><span style={{fontWeight: 'bold', color: '#B0E0E6'}}>Reasoning:</span> {d.reasoning || '—'}</div>
+          <div><span style={{fontWeight: 'bold', color: '#B0E0E6'}}>Intensity:</span> {d.intensity}</div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Scroll reveal hook
+function useScrollReveal(threshold = 0.2) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setVisible(true);
+      },
+      { threshold }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+}
+
+// Typing animation hook
+function useTypingAnimation(fullText, speed = 18, onDone) {
+  const [displayed, setDisplayed] = useState('');
+  useEffect(() => {
+    let i = 0;
+    let timeout;
+    function type() {
+      setDisplayed(fullText.slice(0, i));
+      if (i < fullText.length) {
+        timeout = setTimeout(() => {
+          i++;
+          type();
+        }, speed);
+      } else if (onDone) {
+        onDone();
+      }
+    }
+    type();
+    return () => clearTimeout(timeout);
+  }, [fullText, speed, onDone]);
+  return displayed;
+}
+
+// Journal typing animation with typo correction
+function useJournalTypingAnimation() {
+  const [journalText, setJournalText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  
+  useEffect(() => {
+    const fullText = "Feeling grateful today. The morning walk really helped clear my mind. I noticed I was more patient with my team during the meeting. Small wins, but they matter.";
+    
+    let currentIndex = 0;
+    let isBackspacing = false;
+    let backspaceIndex = 0;
+    let hasTypo = false;
+    let hasBackspaced = false;
+    
+    const typeSpeed = 50;
+    const backspaceSpeed = 30;
+    
+    const type = () => {
+      if (!isBackspacing) {
+        if (currentIndex < fullText.length) {
+          let currentText = fullText.slice(0, currentIndex + 1);
+          
+          // Introduce a typo at "patient" -> "patinet" around word 65-70
+          if (currentIndex >= 65 && currentIndex < 70 && !hasTypo) {
+            currentText = fullText.slice(0, 65) + "patinet" + fullText.slice(71);
+            hasTypo = true;
+          }
+          
+          setJournalText(currentText);
+          currentIndex++;
+          
+          // Start backspacing in the middle after typing "patinet"
+          if (currentIndex === 72 && hasTypo && !hasBackspaced) {
+            setTimeout(() => {
+              isBackspacing = true;
+              backspaceIndex = currentIndex;
+              backspace();
+            }, 800);
+          } else {
+            setTimeout(type, typeSpeed);
+          }
+        }
+      }
+    };
+    
+    const backspace = () => {
+      if (backspaceIndex > 65) {
+        let currentText = fullText.slice(0, backspaceIndex - 1);
+        setJournalText(currentText);
+        backspaceIndex--;
+        setTimeout(backspace, backspaceSpeed);
+      } else {
+        // Continue typing from where we backspaced
+        hasBackspaced = true;
+        isBackspacing = false;
+        currentIndex = backspaceIndex;
+        setTimeout(type, 300);
+      }
+    };
+    
+    setIsTyping(true);
+    type();
+    
+    return () => {
+      setIsTyping(false);
+    };
+  }, []);
+  
+  return { journalText, isTyping };
+}
+
+// Emolytics Demo Component
+const EmolyticsDemoComponent = () => {
+  const { journalText, isTyping } = useJournalTypingAnimation();
+  const [chartsRef, chartsVisible] = useScrollReveal(0.1);
+  const [companionRef, companionVisible] = useScrollReveal(0.2);
+  const [insightRef, insightVisible] = useScrollReveal(0.3);
+  
+  // Sequential loading: insights only appear after charts are fully loaded
+  const [chartsFullyLoaded, setChartsFullyLoaded] = useState(false);
+  
+  useEffect(() => {
+    if (chartsVisible) {
+      // Wait for charts to "complete loading" before showing insights
+      const timer = setTimeout(() => {
+        setChartsFullyLoaded(true);
+      }, 1500); // 1.5 second delay after charts become visible
+      
+      return () => clearTimeout(timer);
+    }
+  }, [chartsVisible]);
+
+  // Chat companion text
+  const evBubble1 = 'How are you feeling today?';
+  const userBubble = 'I feel a bit anxious about my new job.';
+  const evBubble2 = `I totally get that! New jobs can be really overwhelming. What's making you feel most anxious about it?`;
+
+  // Insight typing animation
+  const insightSegments = [
+    'wow! you were really ',
+    React.createElement('span', { key: 'joy', style: { color: emotionColors.Joy } }, 'joyful'),
+    ' about that job offer, weren\'t you? and i can see you\'ve been feeling more ',
+    React.createElement('span', { key: 'joy2', style: { color: emotionColors.Joy } }, 'happy'),
+    ' about your morning walks too. when you do things that make you ',
+    React.createElement('span', { key: 'joy3', style: { color: emotionColors.Joy } }, 'joyful'),
+    ', it really shows in your energy!'
+  ];
+
+  const [insightTypedNodes, setInsightTypedNodes] = useState([]);
+  const [insightDone, setInsightDone] = useState(false);
+  const [showAvatar, setShowAvatar] = useState(false);
+
+  useEffect(() => {
+    // Only start typing animation when charts are fully loaded
+    if (!chartsFullyLoaded) return;
+    
+    let i = 0;
+    let j = 0;
+    let current = [];
+    let timeout;
+    
+    function type() {
+      if (i >= insightSegments.length) {
+        setInsightTypedNodes(current);
+        setInsightDone(true);
+        return;
+      }
+      const seg = insightSegments[i];
+      if (typeof seg === 'string') {
+        if (j < seg.length) {
+          setInsightTypedNodes([...current, seg.slice(0, j + 1)]);
+          j++;
+          timeout = setTimeout(type, 18);
+          return;
+        } else {
+          current = [...current, seg];
+          i++;
+          j = 0;
+          timeout = setTimeout(type, 18);
+          return;
+        }
+      } else {
+        current = [...current, seg];
+        setInsightTypedNodes(current);
+        i++;
+        j = 0;
+        timeout = setTimeout(type, 18);
+        return;
+      }
+    }
+    
+    // Start typing after a brief delay once charts are loaded
+    const startDelay = setTimeout(type, 500);
+    return () => {
+      clearTimeout(timeout);
+      clearTimeout(startDelay);
+    };
+  }, [chartsFullyLoaded]);
+
+  useEffect(() => {
+    if (insightDone) {
+      setTimeout(() => setShowAvatar(true), 100);
+    }
+  }, [insightDone]);
+
+  const feelingText = 'feeling amazing!';
+  const feelingTyped = useTypingAnimation(feelingText, 22);
+
+  return (
+    <div className="mobile-container relative z-10">
+      <div className="text-center mb-12 sm:mb-16">
+        <h2 className="mobile-text-3xl sm:mobile-text-4xl md:mobile-text-5xl font-bold text-white mb-4 tracking-tight px-4">Experience Evolance</h2>
+        <p className="mobile-text-responsive text-white/90 max-w-3xl mx-auto mb-8 sm:mb-10 mobile-leading-relaxed font-light px-4">
+          See how Evolance will work — interactive previews of emotional analytics, AI conversations, and personalized insights.
+        </p>
+      </div>
+
+      {/* AI Chat Companion */}
+      <div ref={companionRef} className={`w-full flex flex-col items-center mb-8 sm:mb-12 mt-8 sm:mt-12 transition-all duration-700 ease-out ${companionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] sm:w-[60vw] h-[40vw] sm:h-[32vw] max-w-4xl max-h-96 rounded-3xl blur-3xl z-0" style={{pointerEvents:'none', background: 'linear-gradient(135deg, #2A7B9B20, #87CEEB15, #B0E0E610)'}}></div>
+        <div className="w-full flex justify-center relative z-10">
+          <div className="w-full max-w-6xl flex flex-col md:flex-row items-center gap-4 sm:gap-6 lg:gap-8 xl:gap-12 px-2 sm:px-4">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4 animate-fade-in-up drop-shadow-glow" style={{color: '#87CEEB'}}>meet ev!</h3>
+              <p className="text-xs sm:text-sm lg:text-base text-white/80 max-w-xs">Your AI companion for emotional growth</p>
+            </div>
+            
+            <div className="flex-1 flex flex-col gap-4 sm:gap-6 lg:gap-8 items-center">
+              <div className="flex w-full fade-in-bubble-1">
+                <div className="flex-shrink-0 mr-2 sm:mr-3 lg:mr-5"><EvIcon size={28} /></div>
+                <div className="px-4 sm:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-3xl text-white/80 mobile-text-responsive text-center max-w-2xl font-light shadow-xl animate-float-bubble-1 backdrop-blur-md border border-white/20 fade-in-bubble-1 mobile-card-compact" style={{backgroundColor: '#2A7B9B80'}}>
+                  {evBubble1}
+                </div>
+              </div>
+              <div className="flex w-full justify-end fade-in-bubble-2">
+                <div className="px-4 sm:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-3xl bg-white/20 text-white/80 mobile-text-responsive text-center max-w-2xl font-light border border-white/20 shadow-xl animate-float-bubble-2 backdrop-blur-md bg-opacity-60 fade-in-bubble-2 mobile-card-compact">
+                  {userBubble}
+                </div>
+                <UserAvatar size={32} className="ml-2 sm:ml-3 lg:ml-5" />
+              </div>
+              <div className="flex w-full fade-in-bubble-3">
+                <div className="flex-shrink-0 mr-2 sm:mr-3 lg:mr-5"><EvIcon size={28} /></div>
+                <div className="px-4 sm:px-6 lg:px-10 py-3 sm:py-4 lg:py-5 rounded-3xl text-white/80 mobile-text-responsive text-center max-w-2xl font-light shadow-xl animate-float-bubble-3 backdrop-blur-md border border-white/20 fade-in-bubble-3 mobile-card-compact" style={{backgroundColor: '#2A7B9B80'}}>
+                  {evBubble2}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Journal Space */}
+      <div className="w-full flex flex-col items-center mb-6 sm:mb-8 mt-6 sm:mt-8">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] sm:w-[60vw] h-[40vw] sm:h-[32vw] max-w-4xl max-h-96 rounded-3xl blur-3xl z-0" style={{pointerEvents:'none', background: 'linear-gradient(135deg, #8B5CF620, #A78BFA15, #C084FC10)'}}></div>
+        <div className="w-full flex justify-center relative z-10">
+          <div className="w-full max-w-full flex flex-col md:flex-row items-center gap-4 sm:gap-6 lg:gap-8 xl:gap-12 px-2 sm:px-4">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left order-1 md:order-2">
+              <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4 animate-fade-in-up drop-shadow-glow" style={{color: '#87CEEB'}}>how was your day?</h3>
+              <p className="text-xs sm:text-sm lg:text-base text-white/80 max-w-xs">Reflect and grow with ambient mood settings</p>
+            </div>
+            
+            <div className="flex-[4] order-2 md:order-1">
+              <div className="w-full backdrop-blur-md rounded-2xl p-4 sm:p-6 lg:p-8 xl:p-10 border border-white/20 shadow-xl animate-ethereal-rgb mobile-card">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-purple-300" />
+                    </div>
+                    <span className="text-white/90 mobile-text-sm font-medium">Today's Reflection</span>
+                  </div>
+                  <span className="text-white/60 mobile-text-xs">2 hours ago</span>
+                </div>
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <p className="text-white/80 mobile-text-sm mobile-leading-relaxed">
+                        "{journalText}{isTyping && <span className="animate-pulse">|</span>}"
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-4">
+                        <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-300 mobile-text-xs border border-green-500/30">Grateful</span>
+                        <span className="px-2 py-1 rounded-full bg-blue-500/20 text-blue-300 mobile-text-xs border border-blue-500/30">Calm</span>
+                        <span className="px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 mobile-text-xs border border-purple-500/30">Focused</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center gap-2 ml-2 sm:ml-4">
+                      <div className="text-center">
+                        <p className="mobile-text-xs font-medium text-purple-300">Weightless</p>
+                        <p className="mobile-text-xs text-purple-400/70">Marconi Union</p>
+                      </div>
+                      
+                      <div className="flex items-end gap-0.5 h-3 sm:h-4">
+                        <div className="w-0.5 bg-purple-400 rounded-full music-bar" style={{height: '4px', animationDelay: '0ms'}}></div>
+                        <div className="w-0.5 bg-purple-400 rounded-full music-bar" style={{height: '6px', animationDelay: '150ms'}}></div>
+                        <div className="w-0.5 bg-purple-400 rounded-full music-bar" style={{height: '8px', animationDelay: '300ms'}}></div>
+                        <div className="w-0.5 bg-purple-400 rounded-full music-bar" style={{height: '5px', animationDelay: '450ms'}}></div>
+                        <div className="w-0.5 bg-purple-400 rounded-full music-bar" style={{height: '7px', animationDelay: '600ms'}}></div>
+                        <div className="w-0.5 bg-purple-400 rounded-full music-bar" style={{height: '4px', animationDelay: '750ms'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Transition Section */}
+      <div className="flex flex-col items-center mb-8 sm:mb-12 px-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="inline-block w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg" style={{backgroundColor: '#2A7B9B'}}>
+            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+          </span>
+          <span className="text-xl sm:text-2xl md:text-3xl font-extrabold drop-shadow-glow font-display" style={{color: '#87CEEB'}}>ev then generates your emolytics</span>
+        </div>
+        <div className="mt-2 text-white/80 text-base sm:text-lg text-center max-w-2xl font-light">Preview how your emotional data will transform into beautiful, interactive analytics—personalized just for you.</div>
+      </div>
+
+      {/* Unified Trend Graphs & Emotional Avatar */}
+      <div className="w-full flex flex-col items-center mb-6 sm:mb-8 mt-6 sm:mt-8">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] sm:w-[60vw] h-[40vw] sm:h-[32vw] max-w-4xl max-h-96 rounded-3xl blur-3xl z-0" style={{pointerEvents:'none', background: 'linear-gradient(135deg, #2A7B9B20, #87CEEB15, #B0E0E610)'}}></div>
+        <div className="w-full flex justify-center relative z-10">
+          <div className="w-full max-w-7xl flex flex-col lg:flex-row items-start gap-8 sm:gap-12 px-4">
+            
+            <div className="flex-1 lg:flex-[2]">
+              <div className="mb-6 text-center lg:text-left">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 animate-fade-in-up drop-shadow-glow" style={{color: '#87CEEB'}}>your emotional trends</h3>
+                <p className="text-white/80 text-base sm:text-lg">Preview of analytics & patterns</p>
+              </div>
+              
+              <div ref={chartsRef} className={`grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 transition-all duration-700 ease-out ${chartsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                {Object.keys(emotionData).slice(0, 4).map((emotion) => (
+                  <div key={emotion} className="bg-white/5 rounded-2xl p-4 sm:p-6 flex flex-col items-center shadow border border-white/10 touch-manipulation">
+                    <h3 className="text-base sm:text-lg font-bold mb-3 text-white">{emotion}</h3>
+                    <ResponsiveContainer width="100%" height={120} className="sm:h-[140px]">
+                      <LineChart data={emotionData[emotion]} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                        <XAxis dataKey="date" tick={{ fill: '#cbd5e1', fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <YAxis domain={[0, 100]} hide />
+                        <Tooltip 
+                          content={(props) => <EmolyticsTooltip {...props} />} 
+                          allowEscapeViewBox={{ x: true, y: true }}
+                          wrapperStyle={{ pointerEvents: 'none', background: 'rgba(30,41,59,0.92)', boxShadow: '0 8px 32px 0 rgba(56,189,248,0.18)', borderRadius: '1rem', border: '1px solid #60a5fa', zIndex: 50 }}
+                          offset={30}
+                        />
+                        <Line type="monotone" dataKey="intensity" stroke={emotionColors[emotion]} strokeWidth={3} dot={false} />
+                        <Brush 
+                          dataKey="date" 
+                          height={25} 
+                          stroke={emotionColors[emotion]}
+                          fill={emotionColors[emotion] + '20'}
+                          strokeWidth={2}
+                          gap={10}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:flex-1 lg:max-w-sm">
+              <div className="mb-6">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 animate-fade-in-up drop-shadow-glow" style={{color: '#87CEEB'}}>Your Reflective Insights!</h3>
+                <p className="text-white/80 text-base sm:text-lg">AI-powered emotional insights</p>
+              </div>
+              
+              <div ref={insightRef} className={`transition-all duration-700 ease-out ${insightVisible && chartsFullyLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                <div className="flex items-center gap-3 sm:gap-5 mb-6">
+                  <div className="flex-shrink-0 flex items-center justify-center"><EvIcon size={36} /></div>
+                  <div className="text-white/80 text-base sm:text-lg text-center lg:text-left max-w-xl font-light">
+                    {insightTypedNodes}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center lg:items-start">
+                  <UserAvatar 
+                    size={112}
+                    className={`mb-4 transition-all duration-700 ease-out ${showAvatar ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
+                  />
+                  <div className="text-white/80 text-base sm:text-lg text-center lg:text-left">
+                    {insightDone ? (
+                      <span>
+                        {feelingTyped}
+                        {feelingTyped.length < feelingText.length && <span className="typing-cursor">|</span>}
+                      </span>
+                    ) : (
+                      <span>&nbsp;</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Vision Statement */}
+      <div className="text-center mb-4 sm:mb-6 px-4">
+        <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">
+          Starting with <span style={{color: '#87CEEB'}}>Emolytics</span> for emotional trends
+        </h3>
+        <p className="text-base sm:text-lg text-white/90 mb-4 leading-relaxed max-w-4xl mx-auto">
+          We're building a comprehensive platform for <span style={{fontWeight: 'bold', color: '#87CEEB'}}>all age groups</span> - from kids to elderly - helping everyone grow emotionally through innovative, age-appropriate approaches.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-sm sm:text-base">
+          <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">Kids</span>
+          <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">Teens</span>
+          <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-300 border border-green-500/30">Adults</span>
+          <span className="px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30">Elderly</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const App = () => {
   const [formData, setFormData] = useState({
@@ -340,12 +876,15 @@ Total waitlist members: ${existingData.length}`
   const CosmicBackground = () => (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <radialGradient id="cosmicGradient" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.6" />
-          <stop offset="30%" stopColor="#6366F1" stopOpacity="0.4" />
-          <stop offset="70%" stopColor="#EC4899" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#1E1B4B" stopOpacity="0.8" />
-        </radialGradient>
+        {/* Seamless linear gradient that flows to next section */}
+        <linearGradient id="cosmicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#1E1B4B" stopOpacity="0.9" />
+          <stop offset="20%" stopColor="#8B5CF6" stopOpacity="0.7" />
+          <stop offset="40%" stopColor="#6366F1" stopOpacity="0.5" />
+          <stop offset="60%" stopColor="#EC4899" stopOpacity="0.4" />
+          <stop offset="80%" stopColor="#16213e" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#16213e" stopOpacity="0.8" />
+        </linearGradient>
         <filter id="glow">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
           <feMerge> 
@@ -354,7 +893,11 @@ Total waitlist members: ${existingData.length}`
           </feMerge>
         </filter>
       </defs>
+      
+      {/* Seamless background that matches next section */}
       <rect width="100%" height="100%" fill="url(#cosmicGradient)" />
+      
+      {/* Floating constellation points */}
       <circle cx="200" cy="150" r="2" fill="#A78BFA" opacity="0.8" filter="url(#glow)">
         <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite" />
       </circle>
@@ -369,6 +912,168 @@ Total waitlist members: ${existingData.length}`
       </circle>
       <circle cx="600" cy="200" r="1.8" fill="#F59E0B" opacity="0.4" filter="url(#glow)">
         <animate attributeName="opacity" values="0.2;0.9;0.2" dur="4.2s" repeatCount="indefinite" />
+      </circle>
+      
+      {/* Additional stars closer to bottom for better transition */}
+      <circle cx="400" cy="650" r="1.5" fill="#8B5CF6" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.8s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="900" cy="700" r="1" fill="#EC4899" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.7;0.2" dur="4.5s" repeatCount="indefinite" />
+      </circle>
+      
+      {/* More scattered twinkling stars */}
+      <circle cx="150" cy="300" r="1" fill="#A78BFA" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.8s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="750" cy="150" r="1.2" fill="#F472B6" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.7;0.1" dur="3.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="450" cy="80" r="0.8" fill="#38BDF8" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2.3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="950" cy="400" r="1.3" fill="#C084FC" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="120" cy="600" r="0.9" fill="#F59E0B" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.9;0.1" dur="3.7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="680" cy="450" r="1.1" fill="#10B981" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.9s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="320" cy="220" r="0.7" fill="#8B5CF6" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="850" cy="350" r="1.4" fill="#EC4899" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="550" cy="550" r="0.8" fill="#A78BFA" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="250" cy="400" r="1.2" fill="#38BDF8" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="720" cy="600" r="0.9" fill="#F472B6" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.8;0.1" dur="2.6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="180" cy="180" r="1.0" fill="#C084FC" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="480" cy="320" r="0.6" fill="#F59E0B" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="820" cy="520" r="1.1" fill="#10B981" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.9s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="380" cy="150" r="0.8" fill="#8B5CF6" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.9;0.2" dur="2.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="650" cy="280" r="1.3" fill="#EC4899" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.3s" repeatCount="indefinite" />
+      </circle>
+      
+      {/* Fill the entire screen with more twinkling stars */}
+      <circle cx="80" cy="120" r="0.5" fill="#A78BFA" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2.8s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="920" cy="80" r="0.7" fill="#F472B6" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="160" cy="420" r="0.6" fill="#38BDF8" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1080" cy="250" r="0.8" fill="#C084FC" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3.7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="40" cy="480" r="0.4" fill="#F59E0B" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1150" cy="180" r="0.9" fill="#10B981" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.5;0.1" dur="4.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="220" cy="80" r="0.5" fill="#8B5CF6" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="980" cy="460" r="0.7" fill="#EC4899" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.7;0.1" dur="3.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="60" cy="320" r="0.6" fill="#A78BFA" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1100" cy="380" r="0.8" fill="#F472B6" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.6;0.2" dur="3.8s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="280" cy="520" r="0.5" fill="#38BDF8" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="780" cy="40" r="0.7" fill="#C084FC" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.8;0.1" dur="3.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="120" cy="680" r="0.6" fill="#F59E0B" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2.9s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1020" cy="600" r="0.8" fill="#10B981" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="340" cy="140" r="0.5" fill="#8B5CF6" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="880" cy="240" r="0.7" fill="#EC4899" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="180" cy="560" r="0.6" fill="#A78BFA" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.9;0.2" dur="2.7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1140" cy="120" r="0.8" fill="#F472B6" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.5;0.1" dur="4.0s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="80" cy="240" r="0.5" fill="#38BDF8" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.0s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="760" cy="580" r="0.7" fill="#C084FC" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3.3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="420" cy="40" r="0.6" fill="#F59E0B" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2.8s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1060" cy="320" r="0.8" fill="#10B981" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.9s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="240" cy="360" r="0.5" fill="#8B5CF6" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="840" cy="420" r="0.7" fill="#EC4899" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.5s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="140" cy="160" r="0.6" fill="#A78BFA" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="960" cy="180" r="0.8" fill="#F472B6" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="80" cy="580" r="0.5" fill="#38BDF8" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1180" cy="440" r="0.7" fill="#C084FC" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="360" cy="620" r="0.6" fill="#F59E0B" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2.9s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="520" cy="120" r="0.8" fill="#10B981" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.5;0.1" dur="4.1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="640" r="0.5" fill="#8B5CF6" opacity="0.7" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="900" cy="160" r="0.7" fill="#EC4899" opacity="0.5" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="40" cy="360" r="0.6" fill="#A78BFA" opacity="0.6" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.7s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="1120" cy="560" r="0.8" fill="#F472B6" opacity="0.4" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.8s" repeatCount="indefinite" />
       </circle>
     </svg>
   );
@@ -871,39 +1576,60 @@ Total waitlist members: ${existingData.length}`
         </div>
       )}
 
-      {/* Navigation */}
+      {/* Modern Navigation */}
       <nav
-        className={`fixed top-0 w-full z-30 bg-black/20 backdrop-blur-lg border-b border-white/10 
+        className={`fixed top-6 left-4 right-4 z-30
           ${showNavbar ? 'navbar-show' : 'navbar-hide'}
         `}
         onMouseEnter={() => setShowNavbar(true)}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
+          <div className="flex justify-between items-center h-14 px-6">
+            {/* Logo Section */}
             <div className="flex items-center">
-              <a href="#" className="flex items-center space-x-3">
-                <img 
-                  src="/logo.png" 
-                  alt="Evolance Logo" 
-                  className="h-8 w-8 object-contain"
-                />
-                <span className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Evolance
+              <a href="#" className="flex items-center space-x-3 group">
+                <div className="relative">
+                  <img 
+                    src="/logo.png" 
+                    alt="Evolance Logo" 
+                    className="h-9 w-9 object-contain transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 rounded-full bg-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
+                Evolance
                 </span>
               </a>
             </div>
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
-                <a href="#features" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Features</a>
-                <a href="#faq" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">FAQ</a>
-                <a href="#testimonials" className="text-white/80 hover:text-white transition-colors duration-300 text-sm font-medium">Stories</a>
+            
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center space-x-1">
+              <a href="#features" className="px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 text-sm font-medium">
+                Features
+              </a>
+              <a href="#testimonials" className="px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 text-sm font-medium">
+                Stories
+              </a>
+              <a href="#faq" className="px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 text-sm font-medium">
+                FAQ
+              </a>
+              
+              {/* CTA Link */}
                 <button 
                   onClick={scrollToWaitlist}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 text-sm font-medium"
+                className="ml-4 px-4 py-2 bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent hover:from-purple-300 hover:via-pink-300 hover:to-indigo-300 hover:bg-white/10 rounded-xl transition-all duration-300 text-sm font-medium inline-flex items-center justify-center"
                 >
-                  Join Waitlist
+                <span className="leading-none">Join Waitlist</span>
                 </button>
               </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button className="text-white/70 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -914,36 +1640,129 @@ Total waitlist members: ${existingData.length}`
         <CosmicBackground />
         
         <div className="relative z-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-fade-in">
-            {/* Waitlist Counter */}
+          {/* Centered Logo Animation */}
+          <div className="flex flex-col items-center justify-center min-h-[80vh]">
+            {/* Enhanced Waitlist Counter */}
             {waitlistCount > 0 && (
-              <div className="mb-6">
-                <div className="inline-flex items-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-full px-4 py-2 border border-purple-400/30">
-                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-white/90 text-sm font-medium">
-                    {waitlistCount} people have joined the waitlist
+              <div className="mb-12 animate-fade-in" style={{ animationDelay: '3s', animationFillMode: 'both' }}>
+                <div className="relative group">
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 via-green-400/20 to-teal-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                  
+                  {/* Main card */}
+                  <div className="relative bg-gradient-to-br from-white/15 via-emerald-500/10 to-green-500/10 backdrop-blur-xl rounded-2xl px-8 py-4 border border-emerald-400/30 shadow-2xl transform group-hover:scale-105 transition-all duration-500">
+                    <div className="flex items-center justify-center space-x-4">
+                      {/* Animated indicator */}
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                          <div className="absolute inset-0 w-3 h-3 bg-emerald-400 rounded-full animate-ping opacity-20"></div>
+                        </div>
+                        <span className="text-emerald-300 text-sm font-medium">LIVE</span>
+                      </div>
+                      
+                      {/* Counter with enhanced styling */}
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-green-400 rounded-full flex items-center justify-center shadow-lg">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM9 9a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="flex items-baseline space-x-1">
+                              <span className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+                                {waitlistCount}
+                              </span>
+                              <span className="text-white/90 text-base font-medium">
+                                early adopters
                   </span>
+                            </div>
+                            <p className="text-emerald-300/80 text-xs font-medium">
+                              joined the waitlist today
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* Trending indicator */}
+                        <div className="flex items-center space-x-1 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-full px-3 py-1 border border-emerald-400/20">
+                          <svg className="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                          </svg>
+                          <span className="text-emerald-300 text-xs font-semibold">Trending</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Subtle progress indicator */}
+                    <div className="mt-3 w-full bg-white/10 rounded-full h-1">
+                      <div 
+                        className="bg-gradient-to-r from-emerald-400 to-green-400 h-1 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${Math.min((waitlistCount / 1000) * 100, 100)}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-white/50 text-xs text-center mt-1">
+                      {waitlistCount < 1000 ? `${1000 - waitlistCount} spots until next milestone` : 'Milestone reached! 🎉'}
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
 
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-loose text-white">
-              World's First AI Platform for
-              <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent pb-2">
-                Emotional Intelligence
-              </span>
+            {/* Animated Logo */}
+            <div className="mb-8 transform transition-all duration-1000 animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>
+              <div className="w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
+                <img 
+                  src="/logo.png" 
+                  alt="Evolance" 
+                  className="w-full h-full object-contain opacity-0 animate-fade-in transform scale-75 hover:scale-110 transition-all duration-700"
+                  style={{ 
+                    animationDelay: '1s', 
+                    animationFillMode: 'both'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Evolance Text */}
+            <div className="mb-8 animate-fade-in" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
+              <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent tracking-wide">
+                Evolance
             </h1>
+              <p className="text-xl md:text-2xl text-white/70 font-light tracking-wider">
+                First AI Platform for Human Being's Emotional Intelligence
+              </p>
+            </div>
+
+            {/* Aristotle Quote */}
+            <div className="mb-8">
+              <blockquote className="text-lg md:text-xl lg:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed font-light italic mb-4 animate-fade-in tracking-wide" style={{ 
+                animationDelay: '2s', 
+                animationFillMode: 'both',
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+              }}>
+                <span className="animate-fade-in" style={{ animationDelay: '2.2s', animationFillMode: 'both' }}>
+                  "Knowing yourself is the beginning of all wisdom."
+                </span>
+              </blockquote>
+              <p className="text-base md:text-lg text-white/70 font-normal tracking-wider animate-fade-in transform translate-y-4 opacity-0" style={{ 
+                animationDelay: '3s', 
+                animationFillMode: 'both',
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontStyle: 'italic'
+              }}>
+                — Aristotle
+              </p>
+            </div>
             
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Evolance helps you achieve emotional clarity, make better decisions, and unlock your full potential through AI-powered emotional analytics and personalized guidance.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '2.5s', animationFillMode: 'both' }}>
               <button 
                 onClick={scrollToWaitlist}
                 className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg text-base font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                Get Early Access
+                Join Waitlist
               </button>
               
               <a 
@@ -953,229 +1772,346 @@ Total waitlist members: ${existingData.length}`
                 Learn More
               </a>
             </div>
-
-            {/* Key Benefits */}
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-16">
-              <div className="text-center">
-                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                  {/* Animated Bar Chart SVG */}
-                  <svg width="40" height="40" viewBox="0 0 40 40">
-                    <rect x="8" y="22" width="4" height="10" rx="2" fill="#a78bfa">
-                      <animate attributeName="height" values="10;16;10" dur="1.5s" repeatCount="indefinite" />
-                      <animate attributeName="y" values="22;16;22" dur="1.5s" repeatCount="indefinite" />
-                    </rect>
-                    <rect x="18" y="16" width="4" height="16" rx="2" fill="#f472b6">
-                      <animate attributeName="height" values="16;10;16" dur="1.5s" repeatCount="indefinite" />
-                      <animate attributeName="y" values="16;22;16" dur="1.5s" repeatCount="indefinite" />
-                    </rect>
-                    <rect x="28" y="10" width="4" height="22" rx="2" fill="#38bdf8">
-                      <animate attributeName="height" values="22;14;22" dur="1.5s" repeatCount="indefinite" />
-                      <animate attributeName="y" values="10;18;10" dur="1.5s" repeatCount="indefinite" />
-                    </rect>
-                  </svg>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">Emolytics Dashboard</h3>
-                <p className="text-white/70 text-sm">Visualize your emotional trends and patterns with interactive analytics.</p>
               </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                  {/* Animated Chat Bubble SVG */}
-                  <svg width="40" height="40" viewBox="0 0 40 40">
-                    <ellipse cx="20" cy="20" rx="14" ry="10" fill="#a78bfa" fillOpacity="0.2">
-                      <animate attributeName="rx" values="14;16;14" dur="2s" repeatCount="indefinite" />
-                    </ellipse>
-                    <rect x="10" y="15" width="20" height="10" rx="5" fill="#f472b6" fillOpacity="0.7">
-                      <animate attributeName="width" values="20;24;20" dur="2s" repeatCount="indefinite" />
-                      <animate attributeName="x" values="10;8;10" dur="2s" repeatCount="indefinite" />
-                    </rect>
-                    <circle cx="16" cy="20" r="1.5" fill="#fff">
-                      <animate attributeName="r" values="1.5;2;1.5" dur="1.2s" repeatCount="indefinite" />
-                    </circle>
-                    <circle cx="20" cy="20" r="1.5" fill="#fff">
-                      <animate attributeName="r" values="1.5;2;1.5" dur="1.2s" begin="0.3s" repeatCount="indefinite" />
-                    </circle>
-                    <circle cx="24" cy="20" r="1.5" fill="#fff">
-                      <animate attributeName="r" values="1.5;2;1.5" dur="1.2s" begin="0.6s" repeatCount="indefinite" />
-                    </circle>
-                  </svg>
-                </div>
-                <h3 className="text-base font-semibold text-white mb-2">AI Companion</h3>
-                <p className="text-white/70 text-sm">Get 24/7 support and personalized guidance from your emotionally intelligent AI.</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                  {/* Animated Upward Arrow/Line Chart SVG */}
-                  <svg width="40" height="40" viewBox="0 0 40 40">
-                    <polyline points="8,28 18,18 26,24 32,12" fill="none" stroke="#38bdf8" strokeWidth="3" strokeLinejoin="round">
-                      <animate attributeName="points" values="8,28 18,18 26,24 32,12;8,28 18,20 26,16 32,8;8,28 18,18 26,24 32,12" dur="2s" repeatCount="indefinite" />
-                    </polyline>
-                    <circle cx="32" cy="12" r="2.5" fill="#f472b6">
-                      <animate attributeName="cy" values="12;8;12" dur="2s" repeatCount="indefinite" />
-                    </circle>
-                  </svg>
-                </div>
-                <h3 className="text-base font-semibold text-white mb-2">Reflective Insights</h3>
-                <p className="text-white/70 text-sm">See how your choices could impact your emotional future with predictive insights.</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-gradient-to-br from-slate-900 to-purple-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Unlock the Power of Emotional Intelligence
-            </h2>
-            <p className="text-lg text-white/70 max-w-3xl mx-auto">
-              Evolance gives you the tools to understand, track, and improve your emotional well-being using real-time analytics and AI-driven insights.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 flex items-center justify-center">
-                <SampleChart />
+      {/* Experience Evolance - Interactive Demo Section */}
+      <section id="features" className="relative overflow-hidden mobile-section-padding">
+        {/* Seamless gradient background that continues from hero */}
+        <div className="absolute inset-0" style={{
+          background: `
+            linear-gradient(135deg, 
+              #16213e 0%,
+              #1a1a3a 15%,
+              #1e1e42 30%,
+              #252550 50%,
+              #2d2d5a 70%,
+              #363663 85%,
+              #4c1d95 100%
+            )
+          `
+        }}></div>
+        
+        {/* Floating ethereal orbs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 left-10 w-96 h-96 rounded-full blur-3xl opacity-20" style={{
+            background: 'radial-gradient(circle, #8b5cf6 0%, #ec4899 50%, transparent 70%)'
+          }}></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full blur-3xl opacity-15" style={{
+            background: 'radial-gradient(circle, #06b6d4 0%, #8b5cf6 50%, transparent 70%)'
+          }}></div>
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full blur-3xl opacity-10" style={{
+            background: 'radial-gradient(circle, #f472b6 0%, #a78bfa 50%, transparent 70%)'
+          }}></div>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Emolytics Dashboard</h3>
-              <p className="text-white/70 leading-relaxed">
-                Visualize your emotional trends, triggers, and patterns with interactive charts. Track your growth and gain clarity on your emotional journey.
-              </p>
-            </div>
-
-            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 flex items-center justify-center">
-                <ChatPreview />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">AI Companion</h3>
-              <p className="text-white/70 leading-relaxed">
-                Get 24/7 support from an emotionally intelligent AI. Receive personalized guidance, reflection prompts, and actionable insights tailored to your needs.
-              </p>
-            </div>
-
-            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 flex items-center justify-center">
-                <DecisionGraph />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Reflective Insights</h3>
-              <p className="text-white/70 leading-relaxed">
-                Simulate how life decisions might impact your emotional trajectory. See predictive analytics and make confident, data-driven choices for your future.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 mt-12">
-            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 flex items-center justify-center">
-                <Fingerprint />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Emotional Fingerprint</h3>
-              <p className="text-white/70 leading-relaxed">
-                Discover your unique emotional identity. Evolance adapts to your patterns, helping you build self-mastery and track your authentic growth over time.
-              </p>
-            </div>
-            <div className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105">
-              <div className="mb-4 h-40 flex items-center justify-center">
-                <PrivacyLock />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Privacy-First Design</h3>
-              <p className="text-white/70 leading-relaxed">
-                You can freely share the things you wouldn't even tell yourself or any therapist. Your data is secure and private, built with privacy at its core.
-              </p>
-            </div>
-          </div>
+              
+        <div className="py-12 sm:py-16">
+          <EmolyticsDemoComponent />
         </div>
       </section>
 
 
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Why People Joined Our Waitlist
-            </h2>
-            <p className="text-lg text-white/70 max-w-3xl mx-auto">
+      {/* Testimonials Section - Seamless continuation */}
+      <section id="testimonials" className="relative overflow-hidden">
+        {/* Mixed gradient from Hero + Features sections */}
+        <div className="absolute inset-0" style={{
+          background: `
+            linear-gradient(135deg, 
+              #2d2d5a 0%,
+              #363663 15%,
+              #4c1d95 30%,
+              #6366F1 45%,
+              #8B5CF6 60%,
+              #EC4899 75%,
+              #1E1B4B 90%,
+              #16213e 100%
+            )
+          `
+        }}></div>
+        
+        {/* Logo watermark in background */}
+        <div className="absolute top-1/4 right-1/4 w-32 h-32 opacity-5">
+          <img src="/logo.png" alt="Evolance" className="w-full h-full object-contain filter brightness-0 invert" />
+          </div>
+
+        {/* Ethereal ambient elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-16 left-16 w-80 h-80 rounded-full blur-3xl opacity-15" style={{
+            background: 'radial-gradient(circle, #8b5cf6 0%, #ec4899 50%, transparent 70%)'
+          }}></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full blur-3xl opacity-10" style={{
+            background: 'radial-gradient(circle, #06b6d4 0%, #a855f7 50%, transparent 70%)'
+          }}></div>
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full blur-3xl opacity-8" style={{
+            background: 'radial-gradient(circle, #f472b6 0%, #c084fc 50%, transparent 70%)'
+          }}></div>
+              </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          {/* Integrated logo and title */}
+          <div className="text-center mb-12 relative">
+            <div className="flex items-center justify-center mb-6">
+              <img src="/logo.png" alt="Evolance" className="w-12 h-12 mr-4 opacity-80" />
+              <h2 className="text-3xl md:text-4xl font-bold text-white">
+                Why People Joined Our Waitlist
+              </h2>
+            </div>
+            <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed">
               Real experiences from people who joined the Evolance waitlist after learning about our platform
-            </p>
-          </div>
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8 justify-items-center">
+          {/* Scattered, realistic testimonials */}
+          <div className="relative max-w-6xl mx-auto h-[850px] overflow-hidden">
             {[
               {
-                name: "Mia",
-                role: "Meditation Teacher",
-                content: "The way Indraneel explained self-reflection and its benefits was so compelling - I immediately joined the waitlist to start my emotional intelligence journey.",
-                initials: "SC"
+                name: "Moushumi",
+                role: "Psychology Professor",
+                content: "The Emolytics feature completely blew my mind! As someone who studies emotions for a living, seeing real-time emotional analytics visualized this way... it's exactly what I've been hoping someone would build.",
+                initials: "MR",
+                position: "top-0 left-0",
+                rotation: "-rotate-2",
+                size: "w-72"
               },
               {
-                name: "Alice",
-                role: "MSBA Student at UC Irvine",
-                content: "After hearing about Evolance's unique approach to emotional intelligence, I knew I had to join the waitlist. Can't wait to try the platform!",
-                initials: "MR"
+                name: "Sanchita",
+                role: "Marketing Manager",
+                content: "I've always been terrible at understanding my own emotions, let alone managing them. When I saw the demo, I literally got goosebumps thinking about how this could help me finally make sense of my feelings.",
+                initials: "SB",
+                position: "top-16 right-8",
+                rotation: "rotate-1",
+                size: "w-80"
               },
               {
-                name: "Julian",
-                role: "Principal Software Engineer",
-                content: "Evolance is breaking new ground in emotional intelligence. After learning about their innovative approach, I immediately joined the waitlist.",
-                initials: "LP"
+                name: "Rosemary",
+                role: "Nurse",
+                content: "Working in healthcare is emotionally draining. The way Evolance approaches emotional intelligence through data and patterns... it feels like exactly what I need to take better care of myself while caring for others.",
+                initials: "RK",
+                position: "top-64 left-16",
+                rotation: "rotate-3",
+                size: "w-84"
               },
               {
-                name: "Priya",
-                role: "Therapist",
-                content: "When Indraneel explained how self-reflection can transform our understanding of emotional patterns, I was convinced. Joined the waitlist that same day!",
-                initials: "PR"
+                name: "Kyle",
+                role: "Fitness Trainer",
+                content: "Honestly, I never thought about tracking emotions like I track workouts. But the Emolytics concept makes so much sense - if you can measure it, you can improve it, right?",
+                initials: "KM",
+                position: "top-80 right-0",
+                rotation: "-rotate-1",
+                size: "w-76"
               },
               {
-                name: "Carlos",
-                role: "Startup Founder",
-                content: "The way Indraneel explained self-reflection and its benefits was so compelling that I joined the waitlist immediately!",
-                initials: "CA"
+                name: "Shubhodeep",
+                role: "Software Engineer",
+                content: "The technical approach to emotional intelligence is fascinating. I'm a data person, so seeing emotions presented as analyzable patterns and trends... that actually resonates with how my brain works.",
+                initials: "SD",
+                position: "top-[400px] left-32",
+                rotation: "rotate-2",
+                size: "w-80"
               },
               {
-                name: "Fatima",
-                role: "Artist",
-                content: "The privacy-first approach combined with powerful emotional analytics made me join the waitlist instantly. Can't wait to try it!",
-                initials: "FA"
+                name: "Austin",
+                role: "Musician",
+                content: "Music is all about emotion, but I've never been good at processing my own feelings. When I heard about this platform, especially the AI companion part, I thought... maybe this could help me understand myself better.",
+                initials: "AC",
+                position: "top-[480px] right-16",
+                rotation: "-rotate-3",
+                size: "w-72"
               },
               {
-                name: "Ethan",
-                role: "High School Student",
-                content: "After hearing about the AI companion feature, I joined the waitlist hoping it could help me build confidence and emotional understanding.",
-                initials: "ET"
+                name: "Jennifer",
+                role: "Teacher",
+                content: "Managing a classroom full of kids requires emotional intelligence I sometimes feel I lack. The Emolytics dashboard showed me patterns in my stress I never noticed before - it was like seeing myself clearly for the first time.",
+                initials: "JW",
+                position: "top-[520px] left-8",
+                rotation: "rotate-1",
+                size: "w-78"
+              },
+              {
+                name: "Kayla",
+                role: "Social Worker",
+                content: "I spend all day helping others with their emotional challenges, but I'm terrible at managing my own. The self-reflection approach this platform takes feels different from anything I've tried before.",
+                initials: "KT",
+                position: "top-[560px] right-24",
+                rotation: "-rotate-2",
+                size: "w-74"
+              },
+              {
+                name: "Carla",
+                role: "Entrepreneur",
+                content: "Running a startup is an emotional rollercoaster. When I saw how Emolytics could help me track and understand my emotional patterns, I knew this could be a game-changer for my mental health and decision-making.",
+                initials: "CN",
+                position: "top-[600px] left-40",
+                rotation: "rotate-2",
+                size: "w-76"
+              },
+              {
+                name: "Meghna",
+                role: "UX Designer",
+                content: "As a designer, I'm always thinking about user emotions, but I rarely pay attention to my own. The way this platform visualizes emotional data is both beautiful and insightful - it's like design meets psychology.",
+                initials: "MK",
+                position: "top-[640px] right-8",
+                rotation: "-rotate-1",
+                size: "w-78"
+              },
+              {
+                name: "Arsh",
+                role: "Medical Student",
+                content: "Med school is incredibly stressful, and I've been looking for ways to better understand my mental health. The Emolytics approach feels so much more scientific and actionable than traditional mood tracking apps.",
+                initials: "AP",
+                position: "top-[680px] left-16",
+                rotation: "rotate-3",
+                size: "w-74"
+              },
+              {
+                name: "Sam",
+                role: "Content Creator",
+                content: "Creating content means constantly dealing with rejection and criticism. I need something that helps me process those emotions better. This platform seems like it could actually help me build emotional resilience.",
+                initials: "SK",
+                position: "top-[720px] right-32",
+                rotation: "-rotate-2",
+                size: "w-80"
+              },
+              {
+                name: "Krish",
+                role: "Data Analyst",
+                content: "I analyze data for a living, so when I saw Emolytics turning emotions into actual analyzable data... that's when I knew this wasn't just another wellness app. This is something I can actually work with.",
+                initials: "KG",
+                position: "top-[760px] left-24",
+                rotation: "rotate-1",
+                size: "w-76"
               }
-            ].map((testimonial, index, arr) => (
-              <div
-                key={index}
-                className={`bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-300 ${index === arr.length - 1 ? 'md:col-span-1 md:col-start-2' : ''}`}
-              >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white font-semibold text-sm">{testimonial.initials}</span>
+            ].map((testimonial, index) => {
+              const [isModalOpen, setIsModalOpen] = useState(false);
+              
+              return (
+                <div key={index}>
+                  {/* Testimonial Card */}
+                  <div
+                    className={`absolute ${testimonial.position} ${testimonial.size} bg-white/8 backdrop-blur-lg rounded-2xl p-6 border border-white/15 transition-all duration-500 shadow-lg opacity-0 animate-fade-in-up cursor-pointer hover:scale-105 hover:bg-white/12 hover:border-purple-400/40`}
+                    style={{
+                      animationDelay: `${index * 0.3}s`,
+                      animationFillMode: 'both',
+                      transform: `${testimonial.rotation === 'rotate-1' ? 'rotate(1deg)' : testimonial.rotation === 'rotate-2' ? 'rotate(2deg)' : testimonial.rotation === 'rotate-3' ? 'rotate(3deg)' : testimonial.rotation === '-rotate-1' ? 'rotate(-1deg)' : testimonial.rotation === '-rotate-2' ? 'rotate(-2deg)' : 'rotate(-3deg)'}`
+                    }}
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                                                    {/* Card content */}
+                    <div className="flex items-center mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mr-3 shadow-md">
+                        <span className="text-white font-semibold text-xs">{testimonial.initials}</span>
                   </div>
                   <div>
-                    <h4 className="text-white font-semibold">{testimonial.name}</h4>
-                    <p className="text-purple-300 text-sm">{testimonial.role}</p>
+                        <h4 className="text-white font-semibold text-sm">{testimonial.name}</h4>
+                        <p className="text-purple-300 text-xs">{testimonial.role}</p>
                   </div>
                 </div>
-                <p className="text-white/80 leading-relaxed italic text-sm">"{testimonial.content}"</p>
+                    <p className="text-white/70 leading-relaxed text-xs">"{testimonial.content.substring(0, 60)}..."</p>
               </div>
-            ))}
+
+                  {/* Modal */}
+                  {isModalOpen && (
+                    <div 
+                      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-500"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      {/* Popup card */}
+                      <div 
+                        className="relative w-96 max-w-[90vw] mx-4 transform scale-100 transition-all duration-500"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {/* Elegant backdrop with blur */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-purple-600/25 to-pink-600/25 backdrop-blur-xl rounded-3xl border border-purple-400/50 shadow-2xl"></div>
+                        
+                        {/* Subtle glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/15 to-pink-600/15 rounded-3xl blur-lg"></div>
+                        
+                        {/* Content */}
+                        <div className="relative p-8 flex flex-col justify-between min-h-[320px]">
+                          {/* Close hint */}
+                          <div className="absolute top-4 right-4 text-white/50 text-xs">
+                            <span>Click anywhere to close</span>
+                          </div>
+                          
+                          <div>
+                            <div className="flex items-center mb-6 mt-4">
+                              <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mr-4 shadow-lg ring-2 ring-white/30">
+                                <span className="text-white font-bold text-base">{testimonial.initials}</span>
+                              </div>
+                              <div>
+                                <h4 className="text-white font-bold text-xl mb-1">{testimonial.name}</h4>
+                                <p className="text-purple-300 text-base font-medium">{testimonial.role}</p>
+                              </div>
+                            </div>
+                            
+                            <blockquote className="text-white/95 leading-relaxed text-lg font-light italic relative">
+                              <span className="absolute -top-3 -left-3 text-purple-400/60 text-5xl font-serif">"</span>
+                              <span className="relative z-10 block pt-4 pb-6 px-4">{testimonial.content}</span>
+                              <span className="absolute -bottom-5 -right-3 text-purple-400/60 text-5xl font-serif">"</span>
+                            </blockquote>
+                          </div>
+                          
+                          {/* Elegant bottom accent */}
+                          <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/20">
+                            <div className="flex space-x-1">
+                              <div className="w-3 h-3 bg-purple-400 rounded-full opacity-70"></div>
+                              <div className="w-3 h-3 bg-pink-400 rounded-full opacity-50"></div>
+                              <div className="w-3 h-3 bg-blue-400 rounded-full opacity-30"></div>
+                            </div>
+                            <span className="text-purple-300/80 text-sm font-medium tracking-wider">Real story</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-gradient-to-br from-slate-900 to-purple-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Frequently Asked Questions</h2>
-            <p className="text-lg text-white/70">Everything you need to know about your journey at Evolance</p>
+      {/* FAQ Section - Seamless continuation */}
+      <section id="faq" className="relative overflow-hidden">
+        {/* Seamless gradient flowing from testimonials */}
+        <div className="absolute inset-0" style={{
+          background: `
+            linear-gradient(135deg, 
+              #a855f7 0%,
+              #9333ea 25%,
+              #7c3aed 50%,
+              #6d28d9 75%,
+              #5b21b6 100%
+            )
+          `
+        }}></div>
+        
+        {/* Logo watermark */}
+        <div className="absolute bottom-1/4 left-1/4 w-40 h-40 opacity-5">
+          <img src="/logo.png" alt="Evolance" className="w-full h-full object-contain filter brightness-0 invert" />
+        </div>
+        
+        {/* Floating ethereal elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-16 right-16 w-72 h-72 rounded-full blur-3xl opacity-12" style={{
+            background: 'radial-gradient(circle, #06b6d4 0%, #3b82f6 50%, transparent 70%)'
+          }}></div>
+          <div className="absolute bottom-20 left-20 w-88 h-88 rounded-full blur-3xl opacity-10" style={{
+            background: 'radial-gradient(circle, #ec4899 0%, #f472b6 50%, transparent 70%)'
+          }}></div>
+          <div className="absolute top-1/3 left-1/2 w-64 h-64 rounded-full blur-3xl opacity-8" style={{
+            background: 'radial-gradient(circle, #8b5cf6 0%, #c084fc 50%, transparent 70%)'
+          }}></div>
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          {/* Integrated logo and title */}
+          <div className="text-center mb-12 relative">
+            <div className="flex items-center justify-center mb-6">
+              <img src="/logo.png" alt="Evolance" className="w-12 h-12 mr-4 opacity-80" />
+              <h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2>
+            </div>
+            <p className="text-lg text-white/80 leading-relaxed">Everything you need to know about your journey at Evolance</p>
           </div>
 
           <div className="space-y-4">
@@ -1218,35 +2154,137 @@ Total waitlist members: ${existingData.length}`
         </div>
       </section>
 
-      {/* Waitlist Section */}
-      <section id="waitlist" className="py-20 relative overflow-hidden">
-        <WaitlistBackground />
+      {/* Waitlist Section - Seamless continuation */}
+      <section id="waitlist" className="relative overflow-hidden">
+        {/* Seamless gradient flowing from FAQ */}
+        <div className="absolute inset-0" style={{
+          background: `
+            linear-gradient(135deg, 
+              #5b21b6 0%,
+              #4c1d95 25%,
+              #3730a3 50%,
+              #312e81 75%,
+              #1e1b4b 100%
+            )
+          `
+        }}></div>
         
-        <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-            Ready to Elevate Your Emotional Intelligence?
+        {/* Central logo watermark */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 opacity-5">
+          <img src="/logo.png" alt="Evolance" className="w-full h-full object-contain filter brightness-0 invert" />
+        </div>
+        
+        {/* Ethereal floating elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 left-10 w-80 h-80 rounded-full blur-3xl opacity-15" style={{
+            background: 'radial-gradient(circle, #8b5cf6 0%, #ec4899 50%, transparent 70%)'
+          }}></div>
+          <div className="absolute bottom-16 right-16 w-96 h-96 rounded-full blur-3xl opacity-10" style={{
+            background: 'radial-gradient(circle, #06b6d4 0%, #3b82f6 50%, transparent 70%)'
+          }}></div>
+        </div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+          {/* Hero Section */}
+          <div className="text-center mb-16">
+            {/* Animated Logo */}
+            <div className="flex items-center justify-center mb-8">
+              <div className="relative">
+                <img src="/logo.png" alt="Evolance" className="w-16 h-16 mx-auto opacity-90 animate-pulse" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400/20 to-pink-400/20 blur-xl"></div>
+              </div>
+            </div>
+            
+            {/* Title with gradient text */}
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                Ready to Elevate Your
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
+                Emotional Intelligence?
+              </span>
           </h2>
-          <p className="text-lg text-white/80 mb-12">
-            Join our waitlist to be among the first to experience Evolance and receive exclusive early access.
-          </p>
+            
+            {/* Daniel Goleman Quote */}
+            <div className="mb-8 max-w-4xl mx-auto text-center">
+              <blockquote className="text-lg md:text-xl text-white/90 leading-relaxed font-light italic mb-6 relative">
+                <span className="absolute -top-3 -left-3 text-purple-400/60 text-5xl font-serif">"</span>
+                <span className="relative z-10">
+                  Emotional self‑awareness is the building block of the next fundamental emotional intelligence: being able to shake off a bad mood.
+                </span>
+                <span className="absolute -bottom-5 -right-3 text-purple-400/60 text-5xl font-serif">"</span>
+              </blockquote>
+              
+              <div className="mb-4">
+                <p className="text-white/80 font-semibold text-base">— Daniel Goleman</p>
+                <p className="text-purple-300/80 text-sm">Leading voice on emotional intelligence</p>
+              </div>
+            </div>
+          </div>
 
-          <div className="max-w-md mx-auto">
+          {/* Enhanced Form Container */}
+          <div className="max-w-lg mx-auto">
             {isWaitlistSubmitted ? (
-              <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-lg border border-green-400/50 rounded-xl p-6">
-                <div className="text-3xl mb-4">✅</div>
-                <h3 className="text-xl font-semibold text-white mb-2">Welcome to the Journey!</h3>
-                <p className="text-green-300 mb-2">You're now on our waitlist.</p>
-                <p className="text-white/60 text-sm">You're member #{waitlistCount} • Check your email for updates</p>
+              <div className="relative">
+                {/* Success card with enhanced design */}
+                <div className="relative bg-gradient-to-br from-emerald-500/20 via-green-500/15 to-teal-500/20 backdrop-blur-xl border border-emerald-400/30 rounded-3xl p-8 shadow-2xl">
+                  {/* Animated success icon */}
+                  <div className="text-center mb-6">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-r from-emerald-400 to-green-400 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                      <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">Welcome to the Journey!</h3>
+                    <p className="text-emerald-300 text-lg mb-3">You're officially on our waitlist ✨</p>
+                  </div>
+                  
+                  {/* Member info with style */}
+                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                          <span className="text-white text-sm font-bold">#{waitlistCount}</span>
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Waitlist Member</p>
+                          <p className="text-white/60 text-sm">Check your email for updates</p>
+                        </div>
+                      </div>
+                      <div className="text-2xl">🎉</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
-              <form onSubmit={handleWaitlistSubmit} className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+              <div className="relative">
+                {/* Enhanced form with premium design */}
+                <div className="relative bg-gradient-to-br from-white/15 via-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                  {/* Form header */}
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl font-bold text-white mb-2">Join Waitlist</h3>
+                    <p className="text-white/70">Make an intentional decision to grow yourself</p>
+                  </div>
+
+                  {/* Enhanced error display */}
                 {submitError && (
-                  <div className="mb-4 p-3 bg-red-500/20 border border-red-400/50 rounded-lg text-red-300 text-sm">
-                    {submitError}
+                    <div className="mb-6 p-4 bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-400/40 rounded-2xl backdrop-blur-sm">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-red-400">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                        </div>
+                        <p className="text-red-300 text-sm font-medium">{submitError}</p>
+                      </div>
                   </div>
                 )}
                 
-                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <form onSubmit={handleWaitlistSubmit} className="space-y-6">
+                    {/* Enhanced input fields */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="relative group">
                   <input
                     type="text"
                     name="firstName"
@@ -1254,8 +2292,11 @@ Total waitlist members: ${existingData.length}`
                     onChange={handleInputChange}
                     placeholder="First Name"
                     required
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                          className="w-full px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300 group-hover:border-white/30"
                   />
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      </div>
+                      <div className="relative group">
                   <input
                     type="text"
                     name="lastName"
@@ -1263,11 +2304,13 @@ Total waitlist members: ${existingData.length}`
                     onChange={handleInputChange}
                     placeholder="Last Name"
                     required
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                          className="w-full px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300 group-hover:border-white/30"
                   />
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      </div>
                 </div>
                 
-                <div className="mb-6">
+                    <div className="relative group">
                   <input
                     type="email"
                     name="email"
@@ -1275,29 +2318,42 @@ Total waitlist members: ${existingData.length}`
                     onChange={handleInputChange}
                     placeholder="Email Address"
                     required
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300"
+                        className="w-full px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300 group-hover:border-white/30"
                   />
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
                 
+                    {/* Enhanced button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      className="relative w-full group overflow-hidden rounded-2xl"
                 >
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 transition-all duration-300 group-hover:from-purple-500 group-hover:via-pink-500 group-hover:to-indigo-500"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="relative px-8 py-4 text-white font-semibold text-lg transition-all duration-300 group-hover:scale-105 group-disabled:scale-100 disabled:opacity-50">
                   {isSubmitting ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                      Joining...
+                          <div className="flex items-center justify-center space-x-3">
+                            <div className="relative">
+                              <div className="w-5 h-5 border-t-2 border-r-2 border-white rounded-full animate-spin"></div>
+                            </div>
+                            <span>Joining the future...</span>
                     </div>
                   ) : (
-                    "Join the Waitlist"
-                  )}
+                          <div className="flex items-center justify-center space-x-2">
+                            <span>Submit</span>
+                            <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                          </div>
+                        )}
+                      </div>
                 </button>
                 
-                <p className="text-white/60 text-xs mt-3">
-                  Early access • Exclusive updates • No spam, ever
-                </p>
+
               </form>
+                </div>
+              </div>
             )}
           </div>
           <div className="mt-20 flex justify-center">
@@ -1308,13 +2364,28 @@ Total waitlist members: ${existingData.length}`
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-black/50 backdrop-blur-lg border-t border-white/10 py-12">
+      {/* Footer - Seamless continuation */}
+      <footer className="relative overflow-hidden">
+        {/* Seamless gradient flowing from waitlist */}
+        <div className="absolute inset-0" style={{
+          background: `
+            linear-gradient(135deg, 
+              #1e1b4b 0%,
+              #1e293b 50%,
+              #0f172a 100%
+            )
+          `
+        }}></div>
+        
+        <div className="relative z-10 py-12 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="col-span-2">
-              <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+              <div className="flex items-center mb-4">
+                <img src="/logo.png" alt="Evolance" className="w-8 h-8 mr-3 opacity-80" />
+                <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Evolance
+                </div>
               </div>
               <p className="text-white/70 mb-6 max-w-md text-sm">
                 Unlock your emotional intelligence through AI-powered analytics, reflective insights, and personalized emotional support.
@@ -1341,6 +2412,7 @@ Total waitlist members: ${existingData.length}`
           </div>
           <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/60 text-sm">
             <p>&copy; 2025 Evolance. All rights reserved. Empowering People.</p>
+          </div>
           </div>
         </div>
       </footer>

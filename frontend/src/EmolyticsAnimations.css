@@ -1,0 +1,281 @@
+/* Mobile-friendly animations for Evolance Emolytics */
+
+/* Fade in animations with reduced motion support */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-bubble-1 {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-in-bubble-2 {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  50% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-in-bubble-3 {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  50% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Float animations for chat bubbles */
+@keyframes float-bubble-1 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes float-bubble-2 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes float-bubble-3 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Typing cursor animation */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Apply animations with reduced motion support */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  .fade-in-bubble-1 {
+    animation: fade-in-bubble-1 0.6s ease-out forwards;
+  }
+
+  .fade-in-bubble-2 {
+    animation: fade-in-bubble-2 1.2s ease-out forwards;
+  }
+
+  .fade-in-bubble-3 {
+    animation: fade-in-bubble-3 1.8s ease-out forwards;
+  }
+
+  .animate-float-bubble-1 {
+    animation: float-bubble-1 3s ease-in-out infinite;
+  }
+
+  .animate-float-bubble-2 {
+    animation: float-bubble-2 3.5s ease-in-out infinite;
+    animation-delay: 0.5s;
+  }
+
+  .animate-float-bubble-3 {
+    animation: float-bubble-3 4s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  .typing-cursor {
+    animation: blink 1s infinite;
+  }
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .fade-in-bubble-1,
+  .fade-in-bubble-2,
+  .fade-in-bubble-3,
+  .animate-float-bubble-1,
+  .animate-float-bubble-2,
+  .animate-float-bubble-3 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .typing-cursor {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  /* Reduce animation intensity on mobile for better performance */
+  @keyframes float-bubble-1 {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes float-bubble-2 {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  @keyframes float-bubble-3 {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+}
+
+/* Glow effects for better mobile visibility */
+.drop-shadow-glow {
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+}
+
+/* Touch-friendly hover states */
+@media (hover: hover) {
+  .touch-manipulation:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Ensure smooth scrolling on mobile */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optimize for mobile performance */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure proper touch targets */
+button, a, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Ethereal RGB animation for journal card - Chameleon style */
+@keyframes ethereal-rgb {
+  0% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.08), rgba(147, 51, 234, 0.03));
+    border-color: rgba(147, 51, 234, 0.2);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.15);
+  }
+  10% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.07), rgba(59, 130, 246, 0.04));
+    border-color: rgba(147, 51, 234, 0.18);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.14);
+  }
+  20% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.06), rgba(59, 130, 246, 0.05));
+    border-color: rgba(147, 51, 234, 0.16);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.13);
+  }
+  30% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.05), rgba(59, 130, 246, 0.06));
+    border-color: rgba(147, 51, 234, 0.14);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.12);
+  }
+  40% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.04), rgba(59, 130, 246, 0.07));
+    border-color: rgba(147, 51, 234, 0.12);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.11);
+  }
+  50% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.03), rgba(59, 130, 246, 0.08));
+    border-color: rgba(147, 51, 234, 0.10);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.10);
+  }
+  60% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.02), rgba(59, 130, 246, 0.09));
+    border-color: rgba(147, 51, 234, 0.08);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.09);
+  }
+  70% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.01), rgba(59, 130, 246, 0.10));
+    border-color: rgba(147, 51, 234, 0.06);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.08);
+  }
+  80% {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.03));
+    border-color: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  }
+  90% {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.07), rgba(16, 185, 129, 0.04));
+    border-color: rgba(59, 130, 246, 0.18);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.14);
+  }
+  100% {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.08), rgba(147, 51, 234, 0.03));
+    border-color: rgba(147, 51, 234, 0.2);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.15);
+  }
+}
+
+.animate-ethereal-rgb {
+  animation: ethereal-rgb 30s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+/* Disable animation for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ethereal-rgb {
+    animation: none;
+    border-color: rgba(147, 51, 234, 0.3);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.2);
+  }
+}
